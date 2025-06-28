@@ -1,201 +1,201 @@
-// check online offline using online offline attribute
-function on() {
-  document.getElementById("center").style.display = "block";
-  document.getElementById("online").style.display = "block";
-  document.getElementById("offline").style.display = "none";
-  navigator.vibrate([50, 100, 200]);
-  setTimeout(() => {
-    document.getElementById("online").style.display = "none";
-  }, 3000);
-}
-function of() {
-  navigator.vibrate([50, 200, 200, 200]);
-  Audiohelp.pause();
-  document.getElementById("center").style.display = "none";
-  document.getElementById("offline").style.display = "block";
-}
-//assign variables
-let loader = document.getElementById("loader");
-let restart = document.getElementById("restart");
+let currentStep = 0;
+let yc = [0, 0, 0, 0]; // Stores the values for each step
 
-let stepone = document.getElementById("step1");
-var steptwo = document.getElementById("step2");
-let stepthree = document.getElementById("step3");
-let stepfour = document.getElementById("step4");
-// var resultbtn=document.getElementById("resultbtn");
-let stp1y = Number(document.getElementById("step1y").value);
-let stp1n = Number(document.getElementById("step1n").value);
-let stp2y = Number(document.getElementById("step2y").value);
-let stp2n = Number(document.getElementById("step2n").value);
-let stp3y = Number(document.getElementById("step3y").value);
-let stp3n = Number(document.getElementById("step3n").value);
-let stp4y = Number(document.getElementById("step4y").value);
-let stp4n = Number(document.getElementById("step4n").value);
-// click sound
-const click = new Audio("sounds/click.mp3");
+// Generates all combinations of [1,2,3,4] that sum to a target
+function getCombinationsForSum(targetSum) {
+  const candidates = [1, 2, 3, 4];
+  const validCombinations = [];
 
-// Audiohelp
-const Audiohelp = new Audio("sounds/help.mp3");
-function st() {
-  navigator.vibrate([50]);
-  click.play();
-  document.getElementById("step1").style.display = "block";
-  document.getElementById("mainpage").style.display = "none";
-  Audiohelp.play();
-}
-//restart
-function reset() {
-  navigator.vibrate([50]);
-  click.play();
-  loader.style.display = "block";
-  document.getElementById("ans").style.display = "none";
-  restart.style.display = "none";
-  setTimeout(() => {
-    loader.style.display = "none";
-    location.reload();
-  }, 1000);
-}
+  function backtrack(startIndex, currentCombo, currentSum) {
+    if (currentSum === targetSum) {
+      validCombinations.push([...currentCombo]);
+      return;
+    }
+    if (currentSum > targetSum) return;
 
-// step1
-function stpy1() {
-  navigator.vibrate([50]);
-  Audiohelp.pause();
-  click.play();
-  yc1 = stp1y;
-  steptwo.style.display = "block";
-  stepone.style.display = "none";
-}
-function stpn1() {
-  Audiohelp.pause();
-  navigator.vibrate([50]);
-  click.play();
-  yc1 = stp1n;
-  steptwo.style.display = "block";
-  stepone.style.display = "none";
-}
-// step2
-function stpy2() {
-  navigator.vibrate([50]);
-  yc2 = stp2y;
-  click.play();
-  stepthree.style.display = "block";
-  steptwo.style.display = "none";
-}
-function stpn2() {
-  navigator.vibrate([50]);
-  click.play();
-  yc2 = stp1n;
-  stepthree.style.display = "block";
-  steptwo.style.display = "none";
-}
-//step3
-function stpy3() {
-  navigator.vibrate([50]);
-  click.play();
-  yc3 = stp3y;
-  stepfour.style.display = "block";
-  stepthree.style.display = "none";
-}
-function stpn3() {
-  navigator.vibrate([50]);
-  click.play();
-  stepfour.style.display = "block";
-  stepthree.style.display = "none";
-  yc3 = stp3n;
-}
-//step4
-function stpy4() {
-  navigator.vibrate([50]);
-  yc4 = stp4y;
-  click.play();
-  // resultbtn.style.display = "block";
-  stepfour.style.display = "none";
-  loader.style.display = "block";
-  setTimeout(answer, 1500);
-}
-function stpn4() {
-  navigator.vibrate([50]);
-  click.play();
-  loader.style.display = "block";
-
-  // resultbtn.style.display = "block";
-  stepfour.style.display = "none";
-  yc4 = stp4n;
-
-  setTimeout(answer, 1500);
-}
-
-//answer
-function answer() {
-  // resultbtn.style.display = "none";
-  loader.style.display = "none";
-  restart.style.display = "block";
-
-  var result = yc1 + yc2 + yc3 + yc4;
-  console.log(result);
-  // function sound(){
-  // var snd = new Audio('onru.mp3')//wav is also supported
-  //  snd.play()}
-  //using switch case
-  switch (result) {
-    case 0:
-      answer = "'FIVE'";
-      new Audio("sounds/five.mp3").play();
-      break;
-    case 10:
-      answer = "'FOUR'";
-      new Audio("sounds/four.mp3").play();
-      break;
-    case 20:
-      answer = "'SIX'";
-      new Audio("sounds/six.mp3").play();
-      break;
-    case 30:
-      answer = "'ZERO'";
-      new Audio("sounds/zero.mp3").play();
-      break;
-    case 40:
-      answer = "'ONE'";
-      new Audio("sounds/one.mp3").play();
-      break;
-    case 50:
-      answer = "'TWO'";
-      new Audio("sounds/two.mp3").play();
-      break;
-    case 60:
-      answer = "'TEN'";
-      new Audio("sounds/ten.mp3").play();
-      break;
-    case 70:
-      answer = "'THREE'";
-      new Audio("sounds/three.mp3").play();
-      break;
-    case 80:
-      answer = "'NINE'";
-      new Audio("sounds/nine.mp3").play();
-      break;
-    case 90:
-      answer = "'SEVEN'";
-      new Audio("sounds/seven.mp3").play();
-      break;
-    case 100:
-      answer = "'EIGHT'";
-      new Audio("sounds/eight.mp3").play();
+    for (let i = startIndex; i < candidates.length; i++) {
+      currentCombo.push(candidates[i]);
+      backtrack(i + 1, currentCombo, currentSum + candidates[i]);
+      currentCombo.pop();
+    }
   }
 
-  document.getElementById(
-    "ans"
-  ).innerHTML = `<h4 class="lineLeft">The Number You Thought of Was<br><br><i class="glow">${answer}</i></h4>`;
+  backtrack(0, [], 0);
+  // Randomly return one of the valid combinations, or empty array if none
+  const randomIndex = Math.floor(Math.random() * validCombinations.length);
+  return validCombinations[randomIndex] || [];
 }
 
-// feedback confirmation
+// Main assignment generator
+function assignStepsToGroups() {
+  const groups = [[], [], [], []]; // Each sub-array represents a group for numbers 1 to 4
+  const assignedSteps = [];
+
+  // Generate unique random numbers from 0 to 10
+  while (assignedSteps.length < 11) {
+    const rand = Math.floor(Math.random() * 11);
+    if (!assignedSteps.includes(rand)) {
+      assignedSteps.push(rand);
+    }
+  }
+
+  //   console.log("Random Step Assignments:", assignedSteps);
+
+  for (let i = 0; i <= 10; i++) {
+    const stepValue = assignedSteps[i];
+    const combo = getCombinationsForSum(i);
+
+    // console.log(
+    //   `Step ${i} → Assigned Value: ${stepValue}, Chosen Combo:`,
+    //   combo
+    // );
+
+    // Distribute the assigned value to groups based on the combo
+    combo.forEach((num) => {
+      if (num >= 1 && num <= 4) {
+        groups[num - 1].push(stepValue);
+      }
+    });
+  }
+
+  //   console.log("Final Group Assignments (1 to 4):", groups);
+
+  return [groups, assignedSteps];
+}
+
+const [numbers, assignedSteps] = assignStepsToGroups(); // Call the main function
+// console.log("Generated Numbers for Steps:", numbers);
+// console.log("Assigned Steps:", assignedSteps);
+
+function numberToWordObject(number) {
+  const words = [
+    "ZERO",
+    "ONE",
+    "TWO",
+    "THREE",
+    "FOUR",
+    "FIVE",
+    "SIX",
+    "SEVEN",
+    "EIGHT",
+    "NINE",
+    "TEN",
+  ];
+  return {
+    answer: `'${words[number] || "Invalid"}'`,
+    sound: `sounds/${words[number]?.toLowerCase() || "unknown"}.mp3`,
+  };
+}
+
+// Sound and answer mapping
+const results = assignedSteps.map((acc, index) => {
+  return numberToWordObject(acc);
+});
+
+console.log("Results Mapping:", results);
+
+const AudioHelper = new Audio("sounds/help.mp3");
+// Function to play vibration and sound (click or other feedback sounds)
+function playVibrationAndClick(
+  vibrationPattern = [50],
+  soundFile = "sounds/click.mp3"
+) {
+  navigator.vibrate(vibrationPattern);
+  new Audio(soundFile).play();
+}
+
+// Function to display the current step
+function displayStep(stepIndex) {
+  const stepDiv = document.getElementById(`step${stepIndex + 1}`);
+  const numberList = stepDiv.querySelector(".number-list");
+  numberList.innerHTML = numbers[stepIndex].join(", ");
+  stepDiv.style.display = "block";
+  if (stepIndex > 0) hideStep(`step${stepIndex}`);
+}
+
+// Show and hide steps
+function showStep(stepId) {
+  document.getElementById(stepId).style.display = "block";
+}
+
+function hideStep(stepId) {
+  document.getElementById(stepId).style.display = "none";
+}
+
+// Start the game
+function startGame() {
+  AudioHelper.play();
+
+  playVibrationAndClick([50], "sounds/click.mp3");
+  document.getElementById("mainpage").style.display = "none";
+  displayStep(currentStep);
+}
+
+// Handle Yes/No answers
+function handleAnswer(stepIndex, value) {
+  AudioHelper.pause();
+  AudioHelper.currentTime = 0; // Reset audio to start
+  yc[stepIndex] = value;
+  currentStep++;
+  if (currentStep < 4) {
+    playVibrationAndClick([50], "sounds/click.mp3");
+    hideStep(`step${stepIndex + 1}`);
+    displayStep(currentStep);
+  } else {
+    playVibrationAndClick([50], "sounds/click.mp3");
+    hideStep(`step${stepIndex + 1}`);
+    showResult();
+  }
+}
+
+// Show the final result based on the calculated value
+function showResult() {
+  let result = yc.reduce((acc, curr) => acc + curr, 0);
+  let { answer, sound } = results[result] || {
+    answer: "'UNKNOWN'",
+    sound: "sounds/unknown.mp3",
+  };
+
+  new Audio(sound).play();
+  document.getElementById(
+    "ans"
+  ).innerHTML = `The Number You Thought of Was: <i>${answer}</i>`;
+  document.getElementById("restart").style.display = "block";
+}
+
+// Restart the game
+function reset() {
+  playVibrationAndClick([50], "sounds/click.mp3");
+  document.getElementById("loader").style.display = "block";
+  hideStep("ans");
+  hideStep("restart");
+  setTimeout(() => {
+    location.reload();
+  }, 500);
+}
+
+// Check if the user is online
+function on() {
+  showStep("center");
+  showStep("online");
+  hideStep("offline");
+  playVibrationAndClick([50, 100, 200]);
+  setTimeout(() => hideStep("online"), 3000);
+}
+
+// Handle offline scenario
+function of() {
+  playVibrationAndClick([50, 200, 200, 200]);
+  hideStep("center");
+  showStep("offline");
+}
+
+// Feedback function to open email
 function feedback() {
-  if (confirm("opening Gmail or Email")) {
-    document.getElementById("fb").href = "mailto:mohammmadibbudummyacc235@gmail.com";
-    navigator.vibrate([50, 100, 50]);
-    setTimeout(() => {
-      document.getElementById("fb").href = "#";
-    }, 2000);
+  if (confirm("Opening Gmail or Email")) {
+    document.getElementById("fb").href = "mailto:mohammmadibbu008@gmail.com";
+    playVibrationAndClick([50, 100, 50]);
+    setTimeout(() => (document.getElementById("fb").href = "#"), 2000);
   } else {
     document.getElementById("fb").href = "#";
     navigator.vibrate([100]);
