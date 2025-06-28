@@ -3,144 +3,86 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=970, user-scalable=no" />
-
-    <meta name="description" content="numer guess" />
+    <meta name="description" content="Number Guess Game" />
     <meta name="keywords" content="HTML, CSS, JavaScript" />
     <meta name="author" content="Ibbu" />
-    <title>Number guess</title>
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <title>Number Guess</title>
     <link rel="stylesheet" type="text/css" href="sources/guess.css" />
   </head>
-  <body ononline="on()" onoffline="of()">
-    <!-- online offline -->
-    <div id="offline">No Network Connection !</div>
-    <div id="online">Back Online !</div>
-
-    <center id="center">
-      <h4
-        class="lineRight"
-        style="color: #410d5c"
-        title="அல்லாஹ்வின் திருப்பெயரால்"
-      >
+  <body>
+    <center>
+      <h4 style="color: #410d5c" title="அல்லாஹ்வின் திருப்பெயரால்">
         بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
       </h4>
       <div id="mainpage">
-        <br /><br /><br /><br />
-        <h4 class="header lineDown">Think any number between 0 to 10</h4>
-        <br /><br /><br /><br />
-        <button id="start" onclick="st();" class="lineUp">
-          Click here to start
-        </button>
+        <h4>Think of any number between 0 to 10</h4>
+        <button onclick="startGame();">Click here to start</button>
       </div>
 
+      <!-- Step 1 -->
       <div id="step1" style="display: none">
-        <h1 class="lineUp">STEp(1/4)</h1>
-        <h3 class="lineRight">
-          If the number you thought was present in given below numbers.press
-          'YES' button, if not then press 'no' button
+        <h1>STEp(1/4)</h1>
+        <h3>
+          If your number is present in the list below, press 'yes'. Otherwise,
+          press 'no'.
         </h3>
-        <br /><br />
-        <h2 class="lineLeft"><i class="glow">4,8,3,0,9,10</i></h2>
-        <br /><br />
-        <div class="flex">
-          <button class="lineUp" value="10" id="step1y" onclick="stpy1()">
-            yes
-          </button>
-          <button class="lineDown" value="0" id="step1n" onclick="stpn1()">
-            No
-          </button>
-        </div>
+        <h2 class="glow number-list"></h2>
+        <button onclick="handleAnswer(0, 1)">Yes</button>
+        <button onclick="handleAnswer(0, 0)">No</button>
       </div>
+
+      <!-- Step 2 -->
       <div id="step2" style="display: none">
-        <h1 class="lineDown">STeP(2/4)</h1>
-        <h3 class="lineLeft">
-          If the number you thought was present in given below Numbers.press
-          'yes' Button, If not then press 'NO' button
+        <h1>STeP(2/4)</h1>
+        <h3>
+          If your number is present in the list below, press 'yes'. Otherwise,
+          press 'no'.
         </h3>
-        <br /><br />
-        <h2 class="lineRight"><i class="glow">3,8,6,7,2,0,10</i></h2>
-        <br /><br />
-        <div class="flex">
-          <button value="20" id="step2y" onclick="stpy2()" class="lineDown">
-            yes
-          </button>
-          <button value="0" id="step2n" onclick="stpn2()" class="lineUp">
-            No
-          </button>
-        </div>
+        <h2 class="glow number-list"></h2>
+        <button onclick="handleAnswer(1, 2)">Yes</button>
+        <button onclick="handleAnswer(1, 0)">No</button>
       </div>
+
+      <!-- Step 3 -->
       <div id="step3" style="display: none">
-        <h1 class="lineUp">StEP(3/4)</h1>
-        <h3 class="lineRight">
-          If the number you Thought was Present in given Below numbers.press
-          'YES' button, if not then press 'NO' button
+        <h1>StEP(3/4)</h1>
+        <h3>
+          If your number is present in the list below, press 'yes'. Otherwise,
+          press 'no'.
         </h3>
-        <br /><br />
-        <h2 class="lineLeft"><i class="glow">2,8,7,9,10</i></h2>
-        <br /><br />
-        <div class="flex">
-          <button value="30" id="step3y" onclick="stpy3()" class="lineUp">
-            yes
-          </button>
-          <button value="0" id="step3n" onclick="stpn3()" class="lineDown">
-            No
-          </button>
-        </div>
+        <h2 class="glow number-list"></h2>
+        <button onclick="handleAnswer(2, 3)">Yes</button>
+        <button onclick="handleAnswer(2, 0)">No</button>
       </div>
+
+      <!-- Step 4 -->
       <div id="step4" style="display: none">
-        <h1 class="lineDown">sTEP(4/4)</h1>
-        <h3 class="lineLeft">
-          If the number you thought was present in Given below numbers.Press
-          'yes' button, if not then Press 'no' button
+        <h1>sTEP(4/4)</h1>
+        <h3>
+          If your number is present in the list below, press 'yes'. Otherwise,
+          press 'no'.
         </h3>
-        <br /><br />
-        <h2 class="lineRight"><i class="glow">1,8,7,3,9</i></h2>
-        <br /><br />
-        <div class="flex">
-          <button value="40" id="step4y" onclick="stpy4()" class="lineUp">
-            yes
-          </button>
-          <button value="0" id="step4n" onclick="stpn4()" class="lineDown">
-            No
-          </button>
+        <h2 class="glow number-list"></h2>
+        <div class="button-container">
+          <button onclick="handleAnswer(3, 4)">Yes</button>
+          <button onclick="handleAnswer(3, 0)">No</button>
         </div>
       </div>
 
-      <!-- <div id="resultbtn" style="display: none;">		
-     <button id="buy" onclick="w()" >submit</button>
-<br>
-</div> -->
       <div id="loader" style="display: none"></div>
-
-      <div class="flex">
-        <span id="ans"></span>
+      <div>
+        <span id="ans" style="font-family: 'Roboto Slab', serif"></span>
       </div>
-      <br /><br /><br />
-      <div class="flex">
-        <button
-          onclick="reset()"
-          id="restart"
-          style="display: none"
-          class="lineDown"
-        >
+
+      <br /><br />
+      <div>
+        <button onclick="reset()" id="restart" style="display: none">
           RESTART
         </button>
       </div>
     </center>
-    <!-- guess the number script -->
+
+    <!-- Link the external JS file -->
     <script type="text/javascript" src="sources/guess.js"></script>
   </body>
-  <footer>
-    <br /><br /><br />
-    <hr />
-    <marquee behavior="scroll" direction="left" scrollamount="12"
-      ><em style="color: black">ibbu © copyright 2023.</em>This page was created
-      by Ibbu. Any feedback, please Access this mail id
-      <a id="fb" href="#" style="color: blue" onclick="feedback()"
-        >mohammadibbudummyacc234@gmail.com</a
-      ></marquee
-    >
-    <hr />
-  </footer>
-</html>  
+</html>
