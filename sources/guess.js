@@ -3,7 +3,9 @@ let yc = [0, 0, 0, 0]; // Stores the values for each step
 
 // Generates all combinations of [1,2,3,4] that sum to a target
 function getCombinationsForSum(targetSum) {
-  const candidates = [1, 2, 3, 4];
+  // const candidates = [1, 2, 3, 4];
+  const candidates = [1, 2, 4, 8];
+
   const validCombinations = [];
 
   function backtrack(startIndex, currentCombo, currentSum) {
@@ -21,6 +23,8 @@ function getCombinationsForSum(targetSum) {
   }
 
   backtrack(0, [], 0);
+  console.log(`Valid combinations for sum ${targetSum}:`, validCombinations);
+
   // Randomly return one of the valid combinations, or empty array if none
   const randomIndex = Math.floor(Math.random() * validCombinations.length);
   return validCombinations[randomIndex] || [];
@@ -32,16 +36,16 @@ function assignStepsToGroups() {
   const assignedSteps = [];
 
   // Generate unique random numbers from 0 to 10
-  while (assignedSteps.length < 11) {
-    const rand = Math.floor(Math.random() * 11);
+  while (assignedSteps.length < 16) {
+    const rand = Math.floor(Math.random() * 16);
     if (!assignedSteps.includes(rand)) {
       assignedSteps.push(rand);
     }
   }
 
-  //   console.log("Random Step Assignments:", assignedSteps);
+  // console.log("Random Step Assignments:", assignedSteps);
 
-  for (let i = 0; i <= 10; i++) {
+  for (let i = 0; i <= assignedSteps.length; i++) {
     const stepValue = assignedSteps[i];
     const combo = getCombinationsForSum(i);
 
@@ -52,13 +56,19 @@ function assignStepsToGroups() {
 
     // Distribute the assigned value to groups based on the combo
     combo.forEach((num) => {
+      if (num === 4) {
+        num = 3; // Adjusting 6 to 4 for the group assignment
+      }
+      if (num === 8) {
+        num = 4; // Adjusting 3 to 2 for the group assignment
+      }
       if (num >= 1 && num <= 4) {
         groups[num - 1].push(stepValue);
       }
     });
   }
 
-  //   console.log("Final Group Assignments (1 to 4):", groups);
+  console.log("Final Group Assignments (1 to 4):", groups);
 
   return [groups, assignedSteps];
 }
@@ -80,7 +90,13 @@ function numberToWordObject(number) {
     "EIGHT",
     "NINE",
     "TEN",
+    "ELEVEN",
+    "TWELVE",
+    "THIRTEEN",
+    "FOURTEEN",
+    "FIFTEEN",
   ];
+
   return {
     answer: `'${words[number] || "Invalid"}'`,
     sound: `sounds/${words[number]?.toLowerCase() || "unknown"}.mp3`,
@@ -104,11 +120,21 @@ function playVibrationAndClick(
   new Audio(soundFile).play();
 }
 
+// shuffle the numbers array to randomize the order
+function Shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    // Pick a random index from 0 to i
+    const j = Math.floor(Math.random() * (i + 1));
+    // Swap elements at i and j
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 // Function to display the current step
 function displayStep(stepIndex) {
   const stepDiv = document.getElementById(`step${stepIndex + 1}`);
   const numberList = stepDiv.querySelector(".number-list");
-  numberList.innerHTML = numbers[stepIndex].join(", ");
+  numberList.innerHTML = Shuffle(numbers[stepIndex]).join(", ");
   stepDiv.style.display = "block";
   if (stepIndex > 0) hideStep(`step${stepIndex}`);
 }
