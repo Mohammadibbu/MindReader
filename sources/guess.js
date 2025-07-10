@@ -1,29 +1,154 @@
-let currentStep = 0;
-let yc = [0, 0, 0, 0]; // Stores the values for each step
+// Modern MindReader Game - Enhanced Performance & UX
+// ═══════════════════════════════════════════════════════════════════════════════
 
-// Enhanced sound management
+// Game State Management
+class GameState {
+  constructor() {
+    this.currentStep = 0;
+    this.answers = [0, 0, 0, 0];
+    this.isTransitioning = false;
+    this.numbers = [];
+    this.results = [];
+    this.init();
+  }
+
+  init() {
+    const [numbers, assignedSteps] = this.generateNumberGroups();
+    this.numbers = numbers;
+    this.results = assignedSteps.map((num, index) => this.numberToWord(num));
+    console.log('🧠 Game initialized with numbers:', numbers);
+    console.log('📊 Results mapping:', this.results);
+  }
+
+  generateNumberGroups() {
+    const groups = [[], [], [], []];
+    const assignedSteps = [];
+
+    // Generate unique random numbers from 0 to 15
+    while (assignedSteps.length < 16) {
+      const rand = Math.floor(Math.random() * 16);
+      if (!assignedSteps.includes(rand)) {
+        assignedSteps.push(rand);
+      }
+    }
+
+    for (let i = 0; i < assignedSteps.length; i++) {
+      const stepValue = assignedSteps[i];
+      const combo = this.getCombinationsForSum(i);
+
+      combo.forEach((num) => {
+        if (num === 4) num = 3;
+        if (num === 8) num = 4;
+        if (num >= 1 && num <= 4) {
+          groups[num - 1].push(stepValue);
+        }
+      });
+    }
+
+    return [groups, assignedSteps];
+  }
+
+  getCombinationsForSum(targetSum) {
+    const candidates = [1, 2, 4, 8];
+    const validCombinations = [];
+
+    const backtrack = (startIndex, currentCombo, currentSum) => {
+      if (currentSum === targetSum) {
+        validCombinations.push([...currentCombo]);
+        return;
+      }
+      if (currentSum > targetSum) return;
+
+      for (let i = startIndex; i < candidates.length; i++) {
+        currentCombo.push(candidates[i]);
+        backtrack(i + 1, currentCombo, currentSum + candidates[i]);
+        currentCombo.pop();
+      }
+    };
+
+    backtrack(0, [], 0);
+    const randomIndex = Math.floor(Math.random() * validCombinations.length);
+    return validCombinations[randomIndex] || [];
+  }
+
+  numberToWord(number) {
+    const words = [
+      "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN",
+      "EIGHT", "NINE", "TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN"
+    ];
+
+    return {
+      answer: words[number] || "UNKNOWN",
+      sound: words[number]?.toLowerCase() || "unknown",
+    };
+  }
+
+  reset() {
+    this.currentStep = 0;
+    this.answers = [0, 0, 0, 0];
+    this.isTransitioning = false;
+    this.init();
+  }
+
+  getResult() {
+    const result = this.answers.reduce((acc, curr) => acc + curr, 0);
+    return this.results[result] || { answer: "UNKNOWN", sound: "unknown" };
+  }
+}
+
+// Enhanced Sound Manager with Performance Optimization
 class SoundManager {
   constructor() {
     this.sounds = new Map();
     this.volume = 0.6;
     this.enabled = true;
+    this.audioContext = null;
+    this.loadedSounds = 0;
+    this.totalSounds = 0;
+    this.preloadSounds();
   }
 
-  preload(soundName, url) {
-    const audio = new Audio(url);
-    audio.volume = this.volume;
-    audio.preload = 'auto';
-    this.sounds.set(soundName, audio);
+  async preloadSounds() {
+    const soundFiles = [
+      'click', 'help', 'zero', 'one', 'two', 'three', 'four', 'five',
+      'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve',
+      'thirteen', 'fourteen', 'fifteen'
+    ];
+
+    this.totalSounds = soundFiles.length;
+
+    soundFiles.forEach(sound => {
+      const audio = new Audio(`sounds/${sound}.mp3`);
+      audio.volume = this.volume;
+      audio.preload = 'auto';
+      
+      audio.addEventListener('canplaythrough', () => {
+        this.loadedSounds++;
+        if (this.loadedSounds === this.totalSounds) {
+          console.log('🎵 All sounds loaded successfully');
+        }
+      }, { once: true });
+
+      audio.addEventListener('error', () => {
+        console.warn(`⚠️ Failed to load sound: ${sound}`);
+      });
+
+      this.sounds.set(sound, audio);
+    });
   }
 
   play(soundName, volume = this.volume) {
     if (!this.enabled) return;
     
     const sound = this.sounds.get(soundName);
-    if (sound) {
-      sound.currentTime = 0;
-      sound.volume = volume;
-      sound.play().catch(e => console.log(`Sound play failed for ${soundName}:`, e));
+    if (sound && sound.readyState >= 2) {
+      try {
+        sound.currentTime = 0;
+        sound.volume = Math.min(volume, this.volume);
+        sound.play().catch(e => console.log(`Sound play failed for ${soundName}:`, e));
+      } catch (error) {
+        console.warn(`Error playing sound ${soundName}:`, error);
+      }
     }
   }
 
@@ -48,121 +173,205 @@ class SoundManager {
   }
 }
 
-// Initialize sound manager
-const soundManager = new SoundManager();
-
-// Preload sounds
-const soundFiles = [
-  'click', 'help', 'zero', 'one', 'two', 'three', 'four', 'five',
-  'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve',
-  'thirteen', 'fourteen', 'fifteen'
-];
-
-soundFiles.forEach(sound => {
-  soundManager.preload(sound, `sounds/${sound}.mp3`);
-});
-
-// Enhanced vibration patterns
-const VibrationPatterns = {
-  click: [50],
-  success: [100, 50, 100],
-  celebration: [200, 100, 200, 100, 200],
-  error: [300, 100, 300],
-  subtle: [30],
-  strong: [150]
-};
-
-// Enhanced haptic feedback
-function playHapticFeedback(pattern = 'click', sound = 'click') {
-  // Vibration
-  if (navigator.vibrate && VibrationPatterns[pattern]) {
-    navigator.vibrate(VibrationPatterns[pattern]);
+// Enhanced Haptic Feedback System
+class HapticManager {
+  constructor() {
+    this.patterns = {
+      click: [50],
+      success: [100, 50, 100],
+      celebration: [200, 100, 200, 100, 200],
+      error: [300, 100, 300],
+      subtle: [30],
+      strong: [150]
+    };
+    this.enabled = 'vibrate' in navigator;
   }
-  
-  // Sound
-  soundManager.play(sound);
+
+  vibrate(pattern = 'click') {
+    if (!this.enabled || !this.patterns[pattern]) return;
+    
+    try {
+      navigator.vibrate(this.patterns[pattern]);
+    } catch (error) {
+      console.warn('Vibration failed:', error);
+    }
+  }
 }
 
-// Generates all combinations of [1,2,4,8] that sum to a target
-function getCombinationsForSum(targetSum) {
-  const candidates = [1, 2, 4, 8];
-  const validCombinations = [];
+// Enhanced Animation Manager
+class AnimationManager {
+  constructor() {
+    this.activeAnimations = new Set();
+    this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
 
-  function backtrack(startIndex, currentCombo, currentSum) {
-    if (currentSum === targetSum) {
-      validCombinations.push([...currentCombo]);
+  animate(element, keyframes, options = {}) {
+    if (this.reducedMotion) {
+      options.duration = 1;
+    }
+
+    const animation = element.animate(keyframes, {
+      duration: 300,
+      easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+      fill: 'forwards',
+      ...options
+    });
+
+    this.activeAnimations.add(animation);
+    
+    animation.addEventListener('finish', () => {
+      this.activeAnimations.delete(animation);
+    });
+
+    return animation;
+  }
+
+  cancelAll() {
+    this.activeAnimations.forEach(animation => animation.cancel());
+    this.activeAnimations.clear();
+  }
+}
+
+// Enhanced Screen Manager with Smooth Transitions
+class ScreenManager {
+  constructor() {
+    this.currentScreen = null;
+    this.isTransitioning = false;
+  }
+
+  async showScreen(screenId, direction = 'forward') {
+    if (this.isTransitioning) return;
+    
+    this.isTransitioning = true;
+    const targetScreen = document.getElementById(screenId);
+    
+    if (!targetScreen) {
+      this.isTransitioning = false;
       return;
     }
-    if (currentSum > targetSum) return;
 
-    for (let i = startIndex; i < candidates.length; i++) {
-      currentCombo.push(candidates[i]);
-      backtrack(i + 1, currentCombo, currentSum + candidates[i]);
-      currentCombo.pop();
+    // Hide current screen
+    if (this.currentScreen && this.currentScreen !== targetScreen) {
+      await this.hideScreen(this.currentScreen, direction);
     }
+
+    // Show target screen
+    await this.displayScreen(targetScreen, direction);
+    
+    this.currentScreen = targetScreen;
+    this.isTransitioning = false;
   }
 
-  backtrack(0, [], 0);
-  console.log(`Valid combinations for sum ${targetSum}:`, validCombinations);
-
-  const randomIndex = Math.floor(Math.random() * validCombinations.length);
-  return validCombinations[randomIndex] || [];
-}
-
-// Enhanced assignment generator with better distribution
-function assignStepsToGroups() {
-  const groups = [[], [], [], []];
-  const assignedSteps = [];
-
-  // Generate unique random numbers from 0 to 15
-  while (assignedSteps.length < 16) {
-    const rand = Math.floor(Math.random() * 16);
-    if (!assignedSteps.includes(rand)) {
-      assignedSteps.push(rand);
-    }
-  }
-
-  for (let i = 0; i <= assignedSteps.length; i++) {
-    const stepValue = assignedSteps[i];
-    const combo = getCombinationsForSum(i);
-
-    combo.forEach((num) => {
-      if (num === 4) num = 3;
-      if (num === 8) num = 4;
-      if (num >= 1 && num <= 4) {
-        groups[num - 1].push(stepValue);
-      }
+  async hideScreen(screen, direction) {
+    const translateX = direction === 'forward' ? '-30px' : '30px';
+    
+    return new Promise(resolve => {
+      screen.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+      screen.style.opacity = '0';
+      screen.style.transform = `translateX(${translateX}) scale(0.95)`;
+      
+      setTimeout(() => {
+        screen.classList.remove('active');
+        screen.style.display = 'none';
+        resolve();
+      }, 400);
     });
   }
 
-  console.log("Final Group Assignments (1 to 4):", groups);
-  return [groups, assignedSteps];
+  async displayScreen(screen, direction) {
+    const translateX = direction === 'forward' ? '30px' : '-30px';
+    
+    return new Promise(resolve => {
+      screen.style.display = 'block';
+      screen.style.opacity = '0';
+      screen.style.transform = `translateX(${translateX}) scale(0.95)`;
+      
+      requestAnimationFrame(() => {
+        screen.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        screen.style.opacity = '1';
+        screen.style.transform = 'translateX(0) scale(1)';
+        screen.classList.add('active');
+        
+        setTimeout(resolve, 500);
+      });
+    });
+  }
 }
 
-const [numbers, assignedSteps] = assignStepsToGroups();
+// Enhanced Confetti System
+class ConfettiManager {
+  constructor() {
+    this.colors = ['#0ea5e9', '#22c55e', '#f59e0b', '#d946ef', '#ef4444'];
+    this.isActive = false;
+  }
 
-// Enhanced number to word conversion
-function numberToWordObject(number) {
-  const words = [
-    "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN",
-    "EIGHT", "NINE", "TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN"
-  ];
+  create() {
+    if (this.isActive) return;
+    
+    this.isActive = true;
+    const confettiCount = 60;
+    const container = document.createElement('div');
+    container.className = 'confetti-container';
+    container.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+    `;
+    
+    document.body.appendChild(container);
+    
+    for (let i = 0; i < confettiCount; i++) {
+      this.createConfettiPiece(container, i);
+    }
+    
+    setTimeout(() => {
+      container.remove();
+      this.isActive = false;
+    }, 4000);
+  }
 
-  return {
-    answer: `${words[number] || "UNKNOWN"}`,
-    sound: words[number]?.toLowerCase() || "unknown",
-  };
+  createConfettiPiece(container, index) {
+    const confetti = document.createElement('div');
+    const size = Math.random() * 8 + 4;
+    const color = this.colors[Math.floor(Math.random() * this.colors.length)];
+    const startX = Math.random() * 100;
+    const duration = Math.random() * 2 + 2;
+    const delay = index * 20;
+    
+    confetti.style.cssText = `
+      position: absolute;
+      width: ${size}px;
+      height: ${size}px;
+      background: ${color};
+      left: ${startX}vw;
+      top: -10px;
+      border-radius: 50%;
+      animation: confetti-fall ${duration}s linear ${delay}ms forwards;
+    `;
+    
+    container.appendChild(confetti);
+  }
 }
 
-// Results mapping
-const results = assignedSteps.map((acc, index) => {
-  return numberToWordObject(acc);
-});
+// Initialize managers
+const gameState = new GameState();
+const soundManager = new SoundManager();
+const hapticManager = new HapticManager();
+const animationManager = new AnimationManager();
+const screenManager = new ScreenManager();
+const confettiManager = new ConfettiManager();
 
-console.log("Results Mapping:", results);
+// Enhanced utility functions
+function playFeedback(pattern = 'click', sound = 'click') {
+  hapticManager.vibrate(pattern);
+  soundManager.play(sound);
+}
 
-// Enhanced shuffle with animation consideration
-function Shuffle(arr) {
+function shuffleArray(arr) {
   const shuffled = [...arr];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -171,68 +380,36 @@ function Shuffle(arr) {
   return shuffled;
 }
 
-// Enhanced screen management with smooth transitions
-function showScreen(screenId, direction = 'forward') {
-  const screens = document.querySelectorAll('.game-screen, .loading-screen');
-  const targetScreen = document.getElementById(screenId);
-  
-  if (!targetScreen) return;
-
-  // Hide all screens with fade out
-  screens.forEach(screen => {
-    if (screen.classList.contains('active')) {
-      screen.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-      screen.style.opacity = '0';
-      screen.style.transform = direction === 'forward' ? 'translateX(-30px)' : 'translateX(30px)';
-      
-      setTimeout(() => {
-        screen.classList.remove('active');
-        screen.style.display = 'none';
-      }, 400);
-    }
-  });
-  
-  // Show target screen with fade in
-  setTimeout(() => {
-    targetScreen.style.display = 'block';
-    targetScreen.style.opacity = '0';
-    targetScreen.style.transform = direction === 'forward' ? 'translateX(30px)' : 'translateX(-30px)';
-    
-    setTimeout(() => {
-      targetScreen.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-      targetScreen.style.opacity = '1';
-      targetScreen.style.transform = 'translateX(0)';
-      targetScreen.classList.add('active');
-    }, 50);
-  }, direction === 'forward' ? 200 : 100);
-}
-
 // Enhanced step display with loading animation
-function displayStep(stepIndex) {
+async function displayStep(stepIndex) {
   const stepDiv = document.getElementById(`step${stepIndex + 1}`);
   const numberList = stepDiv.querySelector(".number-list");
   
-  // Add loading effect with dots animation
+  // Loading animation
   let dots = '';
   const loadingInterval = setInterval(() => {
     dots = dots.length >= 3 ? '' : dots + '.';
     numberList.innerHTML = `<span style="opacity: 0.6;">Analyzing${dots}</span>`;
-  }, 200);
+  }, 300);
+  
+  await screenManager.showScreen(`step${stepIndex + 1}`);
   
   setTimeout(() => {
     clearInterval(loadingInterval);
-    const shuffledNumbers = Shuffle(numbers[stepIndex]);
+    const shuffledNumbers = shuffleArray(gameState.numbers[stepIndex]);
     
     // Enhanced number display with staggered animation
     numberList.innerHTML = '';
     shuffledNumbers.forEach((num, index) => {
       const span = document.createElement('span');
       span.textContent = num;
-      span.style.opacity = '0';
-      span.style.transform = 'translateY(20px)';
-      span.style.transition = 'all 0.3s ease';
-      span.style.display = 'inline-block';
-      span.style.margin = '0 0.2em';
+      span.style.cssText = `
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-block;
+        margin: 0 0.3em;
+      `;
       
       numberList.appendChild(span);
       
@@ -246,105 +423,91 @@ function displayStep(stepIndex) {
       setTimeout(() => {
         span.style.opacity = '1';
         span.style.transform = 'translateY(0)';
-      }, index * 100 + 200);
+      }, index * 100 + 300);
     });
-  }, 800);
-  
-  showScreen(`step${stepIndex + 1}`);
+  }, 1000);
 }
 
-// Enhanced game start with intro animation
-function startGame() {
-  playHapticFeedback('success', 'help');
+// Enhanced game start function
+async function startGame() {
+  if (gameState.isTransitioning) return;
+  
+  playFeedback('success', 'help');
+  gameState.isTransitioning = true;
   
   // Add button loading state
   const startButton = event.target;
   startButton.classList.add('loading');
   startButton.style.pointerEvents = 'none';
   
-  // Enhanced fade out effect
-  const mainPage = document.getElementById("mainpage");
-  mainPage.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-  mainPage.style.opacity = '0';
-  mainPage.style.transform = 'scale(0.9) translateY(-20px)';
-  
-  setTimeout(() => {
-    showScreen('step1');
-    displayStep(currentStep);
-  }, 600);
+  try {
+    await displayStep(gameState.currentStep);
+  } finally {
+    gameState.isTransitioning = false;
+  }
 }
 
 // Enhanced answer handling with visual feedback
-function handleAnswer(stepIndex, value) {
+async function handleAnswer(stepIndex, value) {
+  if (gameState.isTransitioning) return;
+  
+  gameState.isTransitioning = true;
   soundManager.stop('help');
   
-  yc[stepIndex] = value;
-  currentStep++;
+  gameState.answers[stepIndex] = value;
+  gameState.currentStep++;
   
   // Enhanced button feedback
   const clickedButton = event.target;
   const isYes = value > 0;
   
-  // Add success/neutral feedback
-  clickedButton.style.transition = 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
-  clickedButton.style.transform = 'scale(0.95)';
-  
   // Add ripple effect
   const ripple = document.createElement('div');
-  ripple.style.position = 'absolute';
-  ripple.style.borderRadius = '50%';
-  ripple.style.background = 'rgba(255, 255, 255, 0.6)';
-  ripple.style.transform = 'scale(0)';
-  ripple.style.animation = 'ripple 0.6s linear';
-  ripple.style.left = '50%';
-  ripple.style.top = '50%';
-  ripple.style.width = '20px';
-  ripple.style.height = '20px';
-  ripple.style.marginLeft = '-10px';
-  ripple.style.marginTop = '-10px';
+  ripple.style.cssText = `
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    left: 50%;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
+    pointer-events: none;
+  `;
   
   clickedButton.style.position = 'relative';
   clickedButton.appendChild(ripple);
   
-  setTimeout(() => {
-    clickedButton.style.transform = '';
-    ripple.remove();
-  }, 200);
+  // Button press animation
+  animationManager.animate(clickedButton, [
+    { transform: 'scale(1)' },
+    { transform: 'scale(0.95)' },
+    { transform: 'scale(1)' }
+  ], { duration: 200 });
   
-  // Add CSS for ripple animation if not exists
-  if (!document.querySelector('#ripple-style')) {
-    const style = document.createElement('style');
-    style.id = 'ripple-style';
-    style.textContent = `
-      @keyframes ripple {
-        to {
-          transform: scale(4);
-          opacity: 0;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-  }
+  setTimeout(() => ripple.remove(), 600);
   
-  if (currentStep < 4) {
-    playHapticFeedback('click', 'click');
-    
-    setTimeout(() => {
-      displayStep(currentStep);
-    }, 400);
-  } else {
-    playHapticFeedback('success', 'click');
-    
-    setTimeout(() => {
-      showResult();
-    }, 400);
+  try {
+    if (gameState.currentStep < 4) {
+      playFeedback('click', 'click');
+      await new Promise(resolve => setTimeout(resolve, 400));
+      await displayStep(gameState.currentStep);
+    } else {
+      playFeedback('success', 'click');
+      await new Promise(resolve => setTimeout(resolve, 400));
+      await showResult();
+    }
+  } finally {
+    gameState.isTransitioning = false;
   }
 }
 
 // Enhanced result display with dramatic reveal
-function showResult() {
-  showScreen('loader');
-  document.getElementById('loader').style.display = 'block';
+async function showResult() {
+  await screenManager.showScreen('loader');
   
   // Enhanced loading messages
   const loadingMessages = [
@@ -354,36 +517,30 @@ function showResult() {
     "Almost there..."
   ];
   
-  const loaderText = document.querySelector('.loader-content h3');
+  const loaderTitle = document.querySelector('.loading-title');
   let messageIndex = 0;
   
   const messageInterval = setInterval(() => {
     if (messageIndex < loadingMessages.length) {
-      loaderText.style.opacity = '0';
+      loaderTitle.style.opacity = '0';
       setTimeout(() => {
-        loaderText.textContent = loadingMessages[messageIndex];
-        loaderText.style.opacity = '1';
+        loaderTitle.textContent = loadingMessages[messageIndex];
+        loaderTitle.style.opacity = '1';
         messageIndex++;
       }, 200);
     }
-  }, 600);
+  }, 700);
   
-  setTimeout(() => {
+  setTimeout(async () => {
     clearInterval(messageInterval);
     
-    let result = yc.reduce((acc, curr) => acc + curr, 0);
-    let { answer, sound } = results[result] || {
-      answer: "UNKNOWN",
-      sound: "unknown",
-    };
-
+    const { answer, sound } = gameState.getResult();
+    
     // Play result sound
     soundManager.play(sound);
-
+    
     // Show result screen
-    showScreen('result-screen');
-    document.getElementById('result-screen').style.display = 'block';
-    document.getElementById('result-screen').classList.add('active');
+    await screenManager.showScreen('result-screen');
     
     // Dramatic answer reveal
     const answerElement = document.getElementById("ans");
@@ -394,10 +551,12 @@ function showResult() {
     letters.forEach((letter, index) => {
       const span = document.createElement('span');
       span.textContent = letter;
-      span.style.opacity = '0';
-      span.style.transform = 'rotateY(90deg)';
-      span.style.display = 'inline-block';
-      span.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+      span.style.cssText = `
+        opacity: 0;
+        transform: rotateY(90deg);
+        display: inline-block;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      `;
       answerElement.appendChild(span);
       
       setTimeout(() => {
@@ -406,102 +565,48 @@ function showResult() {
       }, index * 100 + 500);
     });
     
-    // Celebration effect
-    playHapticFeedback('celebration', 'click');
-    
-    // Confetti effect (simple version)
-    createConfetti();
+    // Celebration effects
+    playFeedback('celebration', 'click');
+    confettiManager.create();
     
     // Show restart button with delay
     setTimeout(() => {
       const restartBtn = document.getElementById("restart");
-      restartBtn.style.opacity = '0';
-      restartBtn.style.transform = 'translateY(30px) scale(0.9)';
-      restartBtn.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-      
-      setTimeout(() => {
-        restartBtn.style.opacity = '1';
-        restartBtn.style.transform = 'translateY(0) scale(1)';
-      }, 100);
+      animationManager.animate(restartBtn, [
+        { opacity: 0, transform: 'translateY(30px) scale(0.9)' },
+        { opacity: 1, transform: 'translateY(0) scale(1)' }
+      ], { duration: 500 });
     }, 1500);
     
-  }, 2500);
-}
-
-// Simple confetti effect
-function createConfetti() {
-  const colors = ['#6366f1', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'];
-  const confettiCount = 50;
-  
-  for (let i = 0; i < confettiCount; i++) {
-    const confetti = document.createElement('div');
-    confetti.style.position = 'fixed';
-    confetti.style.width = '10px';
-    confetti.style.height = '10px';
-    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-    confetti.style.left = Math.random() * 100 + 'vw';
-    confetti.style.top = '-10px';
-    confetti.style.borderRadius = '50%';
-    confetti.style.pointerEvents = 'none';
-    confetti.style.zIndex = '1000';
-    confetti.style.animation = `confetti-fall ${Math.random() * 2 + 2}s linear forwards`;
-    
-    document.body.appendChild(confetti);
-    
-    setTimeout(() => {
-      confetti.remove();
-    }, 4000);
-  }
-  
-  // Add confetti animation if not exists
-  if (!document.querySelector('#confetti-style')) {
-    const style = document.createElement('style');
-    style.id = 'confetti-style';
-    style.textContent = `
-      @keyframes confetti-fall {
-        0% {
-          transform: translateY(-10px) rotate(0deg);
-          opacity: 1;
-        }
-        100% {
-          transform: translateY(100vh) rotate(360deg);
-          opacity: 0;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-  }
+  }, 3000);
 }
 
 // Enhanced reset function
-function reset() {
-  playHapticFeedback('click', 'click');
+async function reset() {
+  if (gameState.isTransitioning) return;
   
-  // Add loading effect
-  showScreen('loader');
-  document.getElementById('loader').style.display = 'block';
+  playFeedback('click', 'click');
+  gameState.isTransitioning = true;
   
-  // Update loading message
-  const loaderText = document.querySelector('.loader-content h3');
-  loaderText.textContent = 'Resetting game...';
+  await screenManager.showScreen('loader');
+  
+  const loaderTitle = document.querySelector('.loading-title');
+  loaderTitle.textContent = 'Resetting game...';
   
   setTimeout(() => {
-    // Reset all variables
-    currentStep = 0;
-    yc = [0, 0, 0, 0];
-    
-    // Smooth reload
+    gameState.reset();
     location.reload();
   }, 1000);
 }
 
 // Enhanced keyboard support
 document.addEventListener('keydown', function(event) {
-  const activeScreen = document.querySelector('.game-screen.active');
+  if (gameState.isTransitioning) return;
+  
+  const activeScreen = document.querySelector('.screen.active');
   if (!activeScreen) return;
   
-  // Prevent default for handled keys
-  const handledKeys = ['Enter', 'Space', 'y', 'n', 'Y', 'N'];
+  const handledKeys = ['Enter', ' ', 'y', 'n', 'Y', 'N'];
   if (handledKeys.includes(event.key)) {
     event.preventDefault();
   }
@@ -515,22 +620,22 @@ document.addEventListener('keydown', function(event) {
   // Handle Y/N keys on step screens
   if (activeScreen.classList.contains('step-screen')) {
     if (event.key.toLowerCase() === 'y') {
-      const yesButton = activeScreen.querySelector('.btn-success');
+      const yesButton = activeScreen.querySelector('.primary-btn');
       if (yesButton) {
-        yesButton.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-          yesButton.style.transform = '';
-          yesButton.click();
-        }, 100);
+        animationManager.animate(yesButton, [
+          { transform: 'scale(1)' },
+          { transform: 'scale(0.95)' }
+        ], { duration: 100 });
+        setTimeout(() => yesButton.click(), 100);
       }
     } else if (event.key.toLowerCase() === 'n') {
-      const noButton = activeScreen.querySelector('.btn-secondary');
+      const noButton = activeScreen.querySelector('.secondary-btn');
       if (noButton) {
-        noButton.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-          noButton.style.transform = '';
-          noButton.click();
-        }, 100);
+        animationManager.animate(noButton, [
+          { transform: 'scale(1)' },
+          { transform: 'scale(0.95)' }
+        ], { duration: 100 });
+        setTimeout(() => noButton.click(), 100);
       }
     }
   }
@@ -550,15 +655,17 @@ let touchEndX = 0;
 document.addEventListener('touchstart', function(event) {
   touchStartY = event.changedTouches[0].screenY;
   touchStartX = event.changedTouches[0].screenX;
-});
+}, { passive: true });
 
 document.addEventListener('touchend', function(event) {
   touchEndY = event.changedTouches[0].screenY;
   touchEndX = event.changedTouches[0].screenX;
   handleSwipe();
-});
+}, { passive: true });
 
 function handleSwipe() {
+  if (gameState.isTransitioning) return;
+  
   const swipeThreshold = 50;
   const swipeDistanceY = touchStartY - touchEndY;
   const swipeDistanceX = touchStartX - touchEndX;
@@ -573,18 +680,18 @@ function handleSwipe() {
   
   // Swipe left for "Yes" on step screens
   if (swipeDistanceX > swipeThreshold && Math.abs(swipeDistanceY) < swipeThreshold) {
-    const activeScreen = document.querySelector('.game-screen.active');
+    const activeScreen = document.querySelector('.screen.active');
     if (activeScreen && activeScreen.classList.contains('step-screen')) {
-      const yesButton = activeScreen.querySelector('.btn-success');
+      const yesButton = activeScreen.querySelector('.primary-btn');
       if (yesButton) yesButton.click();
     }
   }
   
   // Swipe right for "No" on step screens
   if (swipeDistanceX < -swipeThreshold && Math.abs(swipeDistanceY) < swipeThreshold) {
-    const activeScreen = document.querySelector('.game-screen.active');
+    const activeScreen = document.querySelector('.screen.active');
     if (activeScreen && activeScreen.classList.contains('step-screen')) {
-      const noButton = activeScreen.querySelector('.btn-secondary');
+      const noButton = activeScreen.querySelector('.secondary-btn');
       if (noButton) noButton.click();
     }
   }
@@ -604,52 +711,62 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, observerOptions);
 
-// Initialize the game with enhanced setup
+// Add CSS for confetti animation
+const confettiStyle = document.createElement('style');
+confettiStyle.textContent = `
+  @keyframes confetti-fall {
+    0% {
+      transform: translateY(-10px) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh) rotate(720deg);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes ripple {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+`;
+document.head.appendChild(confettiStyle);
+
+// Initialize the game
 document.addEventListener('DOMContentLoaded', function() {
   // Show the main page
-  showScreen('mainpage');
+  screenManager.showScreen('mainpage');
   
   // Enhanced initial animations
   setTimeout(() => {
-    const header = document.querySelector('.header');
-    header.style.opacity = '1';
-    header.style.transform = 'translateY(0)';
+    const header = document.querySelector('.app-header');
+    if (header) {
+      header.style.opacity = '1';
+      header.style.transform = 'translateY(0)';
+    }
   }, 200);
   
   // Observe animated elements
-  document.querySelectorAll('.orb, .game-screen').forEach(el => {
+  document.querySelectorAll('.gradient-orb, .screen').forEach(el => {
     observer.observe(el);
-  });
-  
-  // Add loading indicator for sounds
-  let soundsLoaded = 0;
-  const totalSounds = soundFiles.length;
-  
-  soundFiles.forEach(soundName => {
-    const audio = soundManager.sounds.get(soundName);
-    if (audio) {
-      audio.addEventListener('canplaythrough', () => {
-        soundsLoaded++;
-        if (soundsLoaded === totalSounds) {
-          console.log('All sounds loaded successfully');
-        }
-      });
-    }
   });
   
   // Add visual feedback for user interactions
   document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('btn')) {
-      playHapticFeedback('click', 'click');
+    if (e.target.classList.contains('primary-btn') || e.target.classList.contains('secondary-btn')) {
+      playFeedback('click', 'click');
     }
   });
   
   console.log('🧠 MindReader Game Enhanced - Ready to read minds!');
   console.log('💡 Controls: Y/N keys, Enter to start/restart, Swipe gestures on mobile');
-  console.log('🎵 Sound system initialized with', totalSounds, 'sounds');
+  console.log('🎵 Sound system initialized');
+  console.log('⚡ Performance optimizations active');
 });
 
-// Add window focus/blur handling for better performance
+// Window focus/blur handling for better performance
 window.addEventListener('blur', () => {
   soundManager.setVolume(0.2);
 });
@@ -660,8 +777,12 @@ window.addEventListener('focus', () => {
 
 // Error handling for audio context
 window.addEventListener('click', function initAudio() {
-  // This helps with browsers that require user interaction for audio
   soundManager.play('click');
   soundManager.stop('click');
   window.removeEventListener('click', initAudio);
 }, { once: true });
+
+// Performance monitoring
+if (typeof performance !== 'undefined' && performance.mark) {
+  performance.mark('mindreader-init-complete');
+}

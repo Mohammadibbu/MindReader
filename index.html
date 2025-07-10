@@ -9,197 +9,223 @@
     <title>MindReader - Number Guessing Game</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="sources/guess.css" />
   </head>
   <body>
-    <!-- Background Elements -->
-    <div class="bg-orbs">
-      <div class="orb orb-1"></div>
-      <div class="orb orb-2"></div>
-      <div class="orb orb-3"></div>
+    <!-- Animated Background -->
+    <div class="bg-container">
+      <div class="gradient-orb orb-1"></div>
+      <div class="gradient-orb orb-2"></div>
+      <div class="gradient-orb orb-3"></div>
+      <div class="gradient-orb orb-4"></div>
+      <div class="mesh-gradient"></div>
     </div>
     
     <!-- Main Container -->
-    <div class="container">
+    <div class="app-container">
       <!-- Header -->
-      <header class="header">
-        <div class="bismillah" title="بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ">
+      <header class="app-header">
+        <div class="bismillah-text">
           بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
         </div>
-        <h1 class="main-title">
-          <span class="title-gradient">Mind</span>Reader
-        </h1>
-        <p class="subtitle">I can read the number in your mind using just 4 questions</p>
+        <div class="brand-container">
+          <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/>
+              <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/>
+            </svg>
+          </div>
+          <h1 class="brand-title">
+            <span class="brand-mind">Mind</span><span class="brand-reader">Reader</span>
+          </h1>
+        </div>
+        <p class="brand-subtitle">I can read the number in your mind using just 4 questions</p>
       </header>
 
       <!-- Game Content -->
-      <main class="game-content">
+      <main class="game-main">
         <!-- Welcome Screen -->
-        <div id="mainpage" class="game-screen active">
-          <div class="welcome-card">
-            <div class="icon-container">
-              <svg class="brain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-                <path d="M8 12h8"/>
-                <path d="M12 8v8"/>
+        <div id="mainpage" class="screen welcome-screen active">
+          <div class="welcome-content">
+            <div class="welcome-icon">
+              <div class="icon-glow"></div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 1v6m0 6v6"/>
+                <path d="m21 12-6-3-6 3-6-3"/>
+                <path d="m21 12-6 3-6-3-6 3"/>
+                <path d="M12 1 9 9l9 3-9 9 3-9-9-3 9-9z"/>
               </svg>
             </div>
-            <h2>Think of any number from 0 to 15</h2>
-            <p class="instruction">Keep it secret, and I'll guess it in just 4 steps!</p>
-            <button class="btn btn-primary" onclick="startGame()">
-              <span>Start Reading Your Mind</span>
-              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
+            <h2 class="welcome-title">Think of any number from 0 to 15</h2>
+            <p class="welcome-description">Keep it secret in your mind, and I'll guess it in exactly 4 steps using the power of binary logic!</p>
+            <button class="primary-btn start-btn" onclick="startGame()">
+              <span class="btn-text">Start Mind Reading</span>
+              <div class="btn-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
             </button>
           </div>
         </div>
 
         <!-- Game Steps -->
-        <div id="step1" class="game-screen step-screen">
-          <div class="step-card">
-            <div class="step-header">
-              <div class="step-indicator">
-                <span class="step-number">1</span>
-                <span class="step-total">/ 4</span>
+        <div id="step1" class="screen step-screen">
+          <div class="step-content">
+            <div class="step-progress">
+              <div class="progress-indicator">
+                <span class="current-step">1</span>
+                <span class="step-divider">/</span>
+                <span class="total-steps">4</span>
               </div>
-              <div class="progress-bar">
+              <div class="progress-track">
                 <div class="progress-fill" style="width: 25%"></div>
               </div>
             </div>
-            <h2>Is your number in this list?</h2>
-            <div class="number-display">
-              <div class="number-list glow"></div>
+            <h2 class="step-title">Is your number in this list?</h2>
+            <div class="numbers-container">
+              <div class="number-list"></div>
             </div>
-            <div class="button-group">
-              <button class="btn btn-success" onclick="handleAnswer(0, 1)">
-                <span>Yes, it's there!</span>
+            <div class="action-buttons">
+              <button class="secondary-btn" onclick="handleAnswer(0, 0)">
+                <span class="btn-text">No, not there</span>
               </button>
-              <button class="btn btn-secondary" onclick="handleAnswer(0, 0)">
-                <span>No, not there</span>
+              <button class="primary-btn" onclick="handleAnswer(0, 1)">
+                <span class="btn-text">Yes, it's there!</span>
               </button>
             </div>
           </div>
         </div>
 
-        <div id="step2" class="game-screen step-screen">
-          <div class="step-card">
-            <div class="step-header">
-              <div class="step-indicator">
-                <span class="step-number">2</span>
-                <span class="step-total">/ 4</span>
+        <div id="step2" class="screen step-screen">
+          <div class="step-content">
+            <div class="step-progress">
+              <div class="progress-indicator">
+                <span class="current-step">2</span>
+                <span class="step-divider">/</span>
+                <span class="total-steps">4</span>
               </div>
-              <div class="progress-bar">
+              <div class="progress-track">
                 <div class="progress-fill" style="width: 50%"></div>
               </div>
             </div>
-            <h2>Is your number in this list?</h2>
-            <div class="number-display">
-              <div class="number-list glow"></div>
+            <h2 class="step-title">Is your number in this list?</h2>
+            <div class="numbers-container">
+              <div class="number-list"></div>
             </div>
-            <div class="button-group">
-              <button class="btn btn-success" onclick="handleAnswer(1, 2)">
-                <span>Yes, it's there!</span>
+            <div class="action-buttons">
+              <button class="secondary-btn" onclick="handleAnswer(1, 0)">
+                <span class="btn-text">No, not there</span>
               </button>
-              <button class="btn btn-secondary" onclick="handleAnswer(1, 0)">
-                <span>No, not there</span>
+              <button class="primary-btn" onclick="handleAnswer(1, 2)">
+                <span class="btn-text">Yes, it's there!</span>
               </button>
             </div>
           </div>
         </div>
 
-        <div id="step3" class="game-screen step-screen">
-          <div class="step-card">
-            <div class="step-header">
-              <div class="step-indicator">
-                <span class="step-number">3</span>
-                <span class="step-total">/ 4</span>
+        <div id="step3" class="screen step-screen">
+          <div class="step-content">
+            <div class="step-progress">
+              <div class="progress-indicator">
+                <span class="current-step">3</span>
+                <span class="step-divider">/</span>
+                <span class="total-steps">4</span>
               </div>
-              <div class="progress-bar">
+              <div class="progress-track">
                 <div class="progress-fill" style="width: 75%"></div>
               </div>
             </div>
-            <h2>Is your number in this list?</h2>
-            <div class="number-display">
-              <div class="number-list glow"></div>
+            <h2 class="step-title">Is your number in this list?</h2>
+            <div class="numbers-container">
+              <div class="number-list"></div>
             </div>
-            <div class="button-group">
-              <button class="btn btn-success" onclick="handleAnswer(2, 4)">
-                <span>Yes, it's there!</span>
+            <div class="action-buttons">
+              <button class="secondary-btn" onclick="handleAnswer(2, 0)">
+                <span class="btn-text">No, not there</span>
               </button>
-              <button class="btn btn-secondary" onclick="handleAnswer(2, 0)">
-                <span>No, not there</span>
+              <button class="primary-btn" onclick="handleAnswer(2, 4)">
+                <span class="btn-text">Yes, it's there!</span>
               </button>
             </div>
           </div>
         </div>
 
-        <div id="step4" class="game-screen step-screen">
-          <div class="step-card">
-            <div class="step-header">
-              <div class="step-indicator">
-                <span class="step-number">4</span>
-                <span class="step-total">/ 4</span>
+        <div id="step4" class="screen step-screen">
+          <div class="step-content">
+            <div class="step-progress">
+              <div class="progress-indicator">
+                <span class="current-step">4</span>
+                <span class="step-divider">/</span>
+                <span class="total-steps">4</span>
               </div>
-              <div class="progress-bar">
+              <div class="progress-track">
                 <div class="progress-fill" style="width: 100%"></div>
               </div>
             </div>
-            <h2>Final question - Is your number here?</h2>
-            <div class="number-display">
-              <div class="number-list glow"></div>
+            <h2 class="step-title">Final question - Is your number here?</h2>
+            <div class="numbers-container">
+              <div class="number-list"></div>
             </div>
-            <div class="button-group">
-              <button class="btn btn-success" onclick="handleAnswer(3, 8)">
-                <span>Yes, it's there!</span>
+            <div class="action-buttons">
+              <button class="secondary-btn" onclick="handleAnswer(3, 0)">
+                <span class="btn-text">No, not there</span>
               </button>
-              <button class="btn btn-secondary" onclick="handleAnswer(3, 0)">
-                <span>No, not there</span>
+              <button class="primary-btn" onclick="handleAnswer(3, 8)">
+                <span class="btn-text">Yes, it's there!</span>
               </button>
             </div>
           </div>
         </div>
 
         <!-- Loading Screen -->
-        <div id="loader" class="loading-screen">
-          <div class="loader-content">
-            <div class="spinner"></div>
-            <h3>Reading your mind...</h3>
-            <p>Analyzing your responses</p>
+        <div id="loader" class="screen loading-screen">
+          <div class="loading-content">
+            <div class="loading-spinner">
+              <div class="spinner-ring"></div>
+              <div class="spinner-ring"></div>
+              <div class="spinner-ring"></div>
+            </div>
+            <h3 class="loading-title">Reading your mind...</h3>
+            <p class="loading-subtitle">Analyzing your responses</p>
           </div>
         </div>
 
         <!-- Result Screen -->
-        <div id="result-screen" class="game-screen result-screen">
-          <div class="result-card">
+        <div id="result-screen" class="screen result-screen">
+          <div class="result-content">
             <div class="result-icon">
+              <div class="success-glow"></div>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 12l2 2 4-4"/>
                 <circle cx="12" cy="12" r="10"/>
               </svg>
             </div>
-            <h2>I knew it!</h2>
-            <div class="result-text">
-              <span>The number you thought of was:</span>
-              <div id="ans" class="answer-display"></div>
+            <h2 class="result-title">I knew it!</h2>
+            <div class="result-reveal">
+              <span class="reveal-text">The number you thought of was:</span>
+              <div id="ans" class="answer-number"></div>
             </div>
-            <button id="restart" class="btn btn-primary" onclick="reset()">
-              <span>Play Again</span>
-              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
-                <path d="M21 3v5h-5"/>
-                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
-                <path d="M3 21v-5h5"/>
-              </svg>
+            <button id="restart" class="primary-btn restart-btn" onclick="reset()">
+              <span class="btn-text">Play Again</span>
+              <div class="btn-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                  <path d="M21 3v5h-5"/>
+                  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                  <path d="M3 21v-5h5"/>
+                </svg>
+              </div>
             </button>
           </div>
         </div>
       </main>
 
       <!-- Footer -->
-      <footer class="footer">
-        <p>Made with ❤️ by Ibbu</p>
+      <footer class="app-footer">
+        <p>Made with ❤️ by <span class="author-name">Ibbu</span></p>
       </footer>
     </div>
 
