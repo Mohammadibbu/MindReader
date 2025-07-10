@@ -2,87 +2,208 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=970, user-scalable=no" />
-    <meta name="description" content="Number Guess Game" />
-    <meta name="keywords" content="HTML, CSS, JavaScript" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="An interactive number guessing game that reads your mind!" />
+    <meta name="keywords" content="number game, mind reading, interactive, fun" />
     <meta name="author" content="Ibbu" />
-    <title>Number Guess</title>
+    <title>MindReader - Number Guessing Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="sources/guess.css" />
   </head>
   <body>
-    <center>
-      <h4 style="color: #410d5c" title="அல்லாஹ்வின் திருப்பெயரால்">
-        بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
-      </h4>
-      <div id="mainpage">
-        <h4>Think of any number from 0 to 15.</h4>
-        <button onclick="startGame();">Click here to start</button>
-      </div>
-
-      <!-- Step 1 -->
-      <div id="step1" style="display: none">
-        <h1>STEp(1/4)</h1>
-        <h3>
-          If your number is present in the list below, press 'yes'. Otherwise,
-          press 'no'.
-        </h3>
-        <h2 class="glow number-list"></h2>
-        <button onclick="handleAnswer(0, 1)">Yes</button>
-        <button onclick="handleAnswer(0, 0)">No</button>
-      </div>
-
-      <!-- Step 2 -->
-      <div id="step2" style="display: none">
-        <h1>STeP(2/4)</h1>
-        <h3>
-          If your number is present in the list below, press 'yes'. Otherwise,
-          press 'no'.
-        </h3>
-        <h2 class="glow number-list"></h2>
-        <button onclick="handleAnswer(1, 2)">Yes</button>
-        <button onclick="handleAnswer(1, 0)">No</button>
-      </div>
-
-      <!-- Step 3 -->
-      <div id="step3" style="display: none">
-        <h1>StEP(3/4)</h1>
-        <h3>
-          If your number is present in the list below, press 'yes'. Otherwise,
-          press 'no'.
-        </h3>
-        <h2 class="glow number-list"></h2>
-        <button onclick="handleAnswer(2, 4)">Yes</button>
-        <button onclick="handleAnswer(2, 0)">No</button>
-      </div>
-
-      <!-- Step 4 -->
-      <div id="step4" style="display: none">
-        <h1>sTEP(4/4)</h1>
-        <h3>
-          If your number is present in the list below, press 'yes'. Otherwise,
-          press 'no'.
-        </h3>
-        <h2 class="glow number-list"></h2>
-        <div class="button-container">
-          <button onclick="handleAnswer(3, 8)">Yes</button>
-          <button onclick="handleAnswer(3, 0)">No</button>
+    <!-- Background Elements -->
+    <div class="bg-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <div class="bismillah" title="بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ">
+          بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
         </div>
-      </div>
+        <h1 class="main-title">
+          <span class="title-gradient">Mind</span>Reader
+        </h1>
+        <p class="subtitle">I can read the number in your mind using just 4 questions</p>
+      </header>
 
-      <div id="loader" style="display: none"></div>
-      <div>
-        <span id="ans" style="font-family: 'Roboto Slab', serif"></span>
-      </div>
+      <!-- Game Content -->
+      <main class="game-content">
+        <!-- Welcome Screen -->
+        <div id="mainpage" class="game-screen active">
+          <div class="welcome-card">
+            <div class="icon-container">
+              <svg class="brain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+                <path d="M8 12h8"/>
+                <path d="M12 8v8"/>
+              </svg>
+            </div>
+            <h2>Think of any number from 0 to 15</h2>
+            <p class="instruction">Keep it secret, and I'll guess it in just 4 steps!</p>
+            <button class="btn btn-primary" onclick="startGame()">
+              <span>Start Reading Your Mind</span>
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </div>
 
-      <br /><br />
-      <div>
-        <button onclick="reset()" id="restart" style="display: none">
-          RESTART
-        </button>
-      </div>
-    </center>
+        <!-- Game Steps -->
+        <div id="step1" class="game-screen step-screen">
+          <div class="step-card">
+            <div class="step-header">
+              <div class="step-indicator">
+                <span class="step-number">1</span>
+                <span class="step-total">/ 4</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 25%"></div>
+              </div>
+            </div>
+            <h2>Is your number in this list?</h2>
+            <div class="number-display">
+              <div class="number-list glow"></div>
+            </div>
+            <div class="button-group">
+              <button class="btn btn-success" onclick="handleAnswer(0, 1)">
+                <span>Yes, it's there!</span>
+              </button>
+              <button class="btn btn-secondary" onclick="handleAnswer(0, 0)">
+                <span>No, not there</span>
+              </button>
+            </div>
+          </div>
+        </div>
 
-    <!-- Link the external JS file -->
+        <div id="step2" class="game-screen step-screen">
+          <div class="step-card">
+            <div class="step-header">
+              <div class="step-indicator">
+                <span class="step-number">2</span>
+                <span class="step-total">/ 4</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 50%"></div>
+              </div>
+            </div>
+            <h2>Is your number in this list?</h2>
+            <div class="number-display">
+              <div class="number-list glow"></div>
+            </div>
+            <div class="button-group">
+              <button class="btn btn-success" onclick="handleAnswer(1, 2)">
+                <span>Yes, it's there!</span>
+              </button>
+              <button class="btn btn-secondary" onclick="handleAnswer(1, 0)">
+                <span>No, not there</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="step3" class="game-screen step-screen">
+          <div class="step-card">
+            <div class="step-header">
+              <div class="step-indicator">
+                <span class="step-number">3</span>
+                <span class="step-total">/ 4</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 75%"></div>
+              </div>
+            </div>
+            <h2>Is your number in this list?</h2>
+            <div class="number-display">
+              <div class="number-list glow"></div>
+            </div>
+            <div class="button-group">
+              <button class="btn btn-success" onclick="handleAnswer(2, 4)">
+                <span>Yes, it's there!</span>
+              </button>
+              <button class="btn btn-secondary" onclick="handleAnswer(2, 0)">
+                <span>No, not there</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="step4" class="game-screen step-screen">
+          <div class="step-card">
+            <div class="step-header">
+              <div class="step-indicator">
+                <span class="step-number">4</span>
+                <span class="step-total">/ 4</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 100%"></div>
+              </div>
+            </div>
+            <h2>Final question - Is your number here?</h2>
+            <div class="number-display">
+              <div class="number-list glow"></div>
+            </div>
+            <div class="button-group">
+              <button class="btn btn-success" onclick="handleAnswer(3, 8)">
+                <span>Yes, it's there!</span>
+              </button>
+              <button class="btn btn-secondary" onclick="handleAnswer(3, 0)">
+                <span>No, not there</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div id="loader" class="loading-screen">
+          <div class="loader-content">
+            <div class="spinner"></div>
+            <h3>Reading your mind...</h3>
+            <p>Analyzing your responses</p>
+          </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="game-screen result-screen">
+          <div class="result-card">
+            <div class="result-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 12l2 2 4-4"/>
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
+            </div>
+            <h2>I knew it!</h2>
+            <div class="result-text">
+              <span>The number you thought of was:</span>
+              <div id="ans" class="answer-display"></div>
+            </div>
+            <button id="restart" class="btn btn-primary" onclick="reset()">
+              <span>Play Again</span>
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                <path d="M21 3v5h-5"/>
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                <path d="M3 21v-5h5"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </main>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <p>Made with ❤️ by Ibbu</p>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
     <script type="text/javascript" src="sources/guess.js"></script>
   </body>
 </html>
