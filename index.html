@@ -3,13 +3,27 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="An interactive number guessing game that reads your mind!" />
-    <meta name="keywords" content="number game, mind reading, interactive, fun" />
+    <meta
+      name="description"
+      content="An interactive number guessing game that reads your mind!"
+    />
+    <meta
+      name="keywords"
+      content="number game, mind reading, interactive, fun"
+    />
     <meta name="author" content="Ibbu" />
     <title>MindReader - Number Guessing Game</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
     <link rel="stylesheet" type="text/css" href="sources/guess.css" />
   </head>
   <body>
@@ -21,26 +35,36 @@
       <div class="gradient-orb orb-4"></div>
       <div class="mesh-gradient"></div>
     </div>
-    
+
     <!-- Main Container -->
     <div class="app-container">
       <!-- Header -->
       <header class="app-header">
-        <div class="bismillah-text">
-          بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
-        </div>
+        <div class="bismillah-text">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
         <div class="brand-container">
           <div class="brand-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/>
-              <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"
+              />
+              <path
+                d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"
+              />
             </svg>
           </div>
           <h1 class="brand-title">
-            <span class="brand-mind">Mind</span><span class="brand-reader">Reader</span>
+            <span class="brand-mind">Mind</span
+            ><span class="brand-reader">Reader</span>
           </h1>
         </div>
-        <p class="brand-subtitle">I can read the number in your mind using just 4 questions</p>
+        <p class="brand-subtitle">
+          I can read the number in your mind using just 4 questions
+        </p>
       </header>
 
       <!-- Game Content -->
@@ -50,21 +74,26 @@
           <div class="welcome-content">
             <div class="welcome-icon">
               <div class="icon-glow"></div>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 1v6m0 6v6"/>
-                <path d="m21 12-6-3-6 3-6-3"/>
-                <path d="m21 12-6 3-6-3-6 3"/>
-                <path d="M12 1 9 9l9 3-9 9 3-9-9-3 9-9z"/>
-              </svg>
+              <i
+                class="fas fa-cogs"
+                style="font-size: 1.5rem; color: currentColor"
+              ></i>
             </div>
             <h2 class="welcome-title">Think of any number from 0 to 15</h2>
-            <p class="welcome-description">Keep it secret in your mind, and I'll guess it in exactly 4 steps using the power of binary logic!</p>
+            <p class="welcome-description">
+              Keep it secret in your mind, and I'll guess it in exactly 4 steps
+              using the power of Ibbu algorithm!
+            </p>
             <button class="primary-btn start-btn" onclick="startGame()">
               <span class="btn-text">Start Mind Reading</span>
               <div class="btn-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </div>
             </button>
@@ -198,9 +227,14 @@
           <div class="result-content">
             <div class="result-icon">
               <div class="success-glow"></div>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 12l2 2 4-4"/>
-                <circle cx="12" cy="12" r="10"/>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M9 12l2 2 4-4" />
+                <circle cx="12" cy="12" r="10" />
               </svg>
             </div>
             <h2 class="result-title">I knew it!</h2>
@@ -208,14 +242,27 @@
               <span class="reveal-text">The number you thought of was:</span>
               <div id="ans" class="answer-number"></div>
             </div>
-            <button id="restart" class="primary-btn restart-btn" onclick="reset()">
+            <button
+              id="restart"
+              class="primary-btn restart-btn"
+              onclick="reset()"
+            >
               <span class="btn-text">Play Again</span>
               <div class="btn-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
-                  <path d="M21 3v5h-5"/>
-                  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
-                  <path d="M3 21v-5h5"/>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"
+                  />
+                  <path d="M21 3v5h-5" />
+                  <path
+                    d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"
+                  />
+                  <path d="M3 21v-5h5" />
                 </svg>
               </div>
             </button>
@@ -225,7 +272,20 @@
 
       <!-- Footer -->
       <footer class="app-footer">
-        <p>Made with ❤️ by <span class="author-name">Ibbu</span></p>
+        <p>
+          Made with ❤️ by <span class="author-name">Ibbu</span>
+          <a
+            href="https://github.com/Mohammadibbu/GuessMaster/"
+            target="_blank"
+            aria-label="GitHub"
+            style="color: #a3a3a3; margin: 0 0.3rem; text-decoration: none"
+          >
+            <i class="fab fa-github"></i>
+          </a>
+        </p>
+        <p style="margin: 0.3rem 0 0; font-size: 0.85rem; color: #737373">
+          &copy; 2025 Ibbu. All rights reserved.
+        </p>
       </footer>
     </div>
 
