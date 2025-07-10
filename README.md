@@ -61,4 +61,4 @@ Contributions are welcome! If you’d like to improve the game or suggest new fe
 Feel free to modify the content or add any additional sections that fit your project needs!
 
 
-Live SIte :https://mohammadibbu.github.io/GuessMaster/
+Live Site :https://mohammadibbu.github.io/GuessMaster/
