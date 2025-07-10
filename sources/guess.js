@@ -16,8 +16,8 @@ class GameState {
     const [numbers, assignedSteps] = this.generateNumberGroups();
     this.numbers = numbers;
     this.results = assignedSteps.map((num, index) => this.numberToWord(num));
-    console.log('🧠 Game initialized with numbers:', numbers);
-    console.log('📊 Results mapping:', this.results);
+    console.log("🧠 Game initialized with numbers:", numbers);
+    console.log("📊 Results mapping:", this.results);
   }
 
   generateNumberGroups() {
@@ -73,8 +73,22 @@ class GameState {
 
   numberToWord(number) {
     const words = [
-      "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN",
-      "EIGHT", "NINE", "TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN"
+      "ZERO",
+      "ONE",
+      "TWO",
+      "THREE",
+      "FOUR",
+      "FIVE",
+      "SIX",
+      "SEVEN",
+      "EIGHT",
+      "NINE",
+      "TEN",
+      "ELEVEN",
+      "TWELVE",
+      "THIRTEEN",
+      "FOURTEEN",
+      "FIFTEEN",
     ];
 
     return {
@@ -110,26 +124,45 @@ class SoundManager {
 
   async preloadSounds() {
     const soundFiles = [
-      'click', 'help', 'zero', 'one', 'two', 'three', 'four', 'five',
-      'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve',
-      'thirteen', 'fourteen', 'fifteen'
+      "click",
+      "help",
+      "zero",
+      "one",
+      "two",
+      "three",
+      "four",
+      "five",
+      "six",
+      "seven",
+      "eight",
+      "nine",
+      "ten",
+      "eleven",
+      "twelve",
+      "thirteen",
+      "fourteen",
+      "fifteen",
     ];
 
     this.totalSounds = soundFiles.length;
 
-    soundFiles.forEach(sound => {
+    soundFiles.forEach((sound) => {
       const audio = new Audio(`sounds/${sound}.mp3`);
       audio.volume = this.volume;
-      audio.preload = 'auto';
-      
-      audio.addEventListener('canplaythrough', () => {
-        this.loadedSounds++;
-        if (this.loadedSounds === this.totalSounds) {
-          console.log('🎵 All sounds loaded successfully');
-        }
-      }, { once: true });
+      audio.preload = "auto";
 
-      audio.addEventListener('error', () => {
+      audio.addEventListener(
+        "canplaythrough",
+        () => {
+          this.loadedSounds++;
+          if (this.loadedSounds === this.totalSounds) {
+            console.log("🎵 All sounds loaded successfully");
+          }
+        },
+        { once: true }
+      );
+
+      audio.addEventListener("error", () => {
         console.warn(`⚠️ Failed to load sound: ${sound}`);
       });
 
@@ -139,13 +172,15 @@ class SoundManager {
 
   play(soundName, volume = this.volume) {
     if (!this.enabled) return;
-    
+
     const sound = this.sounds.get(soundName);
     if (sound && sound.readyState >= 2) {
       try {
         sound.currentTime = 0;
         sound.volume = Math.min(volume, this.volume);
-        sound.play().catch(e => console.log(`Sound play failed for ${soundName}:`, e));
+        sound
+          .play()
+          .catch((e) => console.log(`Sound play failed for ${soundName}:`, e));
       } catch (error) {
         console.warn(`Error playing sound ${soundName}:`, error);
       }
@@ -162,7 +197,7 @@ class SoundManager {
 
   setVolume(volume) {
     this.volume = Math.max(0, Math.min(1, volume));
-    this.sounds.forEach(sound => {
+    this.sounds.forEach((sound) => {
       sound.volume = this.volume;
     });
   }
@@ -182,18 +217,18 @@ class HapticManager {
       celebration: [200, 100, 200, 100, 200],
       error: [300, 100, 300],
       subtle: [30],
-      strong: [150]
+      strong: [150],
     };
-    this.enabled = 'vibrate' in navigator;
+    this.enabled = "vibrate" in navigator;
   }
 
-  vibrate(pattern = 'click') {
+  vibrate(pattern = "click") {
     if (!this.enabled || !this.patterns[pattern]) return;
-    
+
     try {
       navigator.vibrate(this.patterns[pattern]);
     } catch (error) {
-      console.warn('Vibration failed:', error);
+      console.warn("Vibration failed:", error);
     }
   }
 }
@@ -202,7 +237,9 @@ class HapticManager {
 class AnimationManager {
   constructor() {
     this.activeAnimations = new Set();
-    this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
   }
 
   animate(element, keyframes, options = {}) {
@@ -212,14 +249,14 @@ class AnimationManager {
 
     const animation = element.animate(keyframes, {
       duration: 300,
-      easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-      fill: 'forwards',
-      ...options
+      easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+      fill: "forwards",
+      ...options,
     });
 
     this.activeAnimations.add(animation);
-    
-    animation.addEventListener('finish', () => {
+
+    animation.addEventListener("finish", () => {
       this.activeAnimations.delete(animation);
     });
 
@@ -227,7 +264,7 @@ class AnimationManager {
   }
 
   cancelAll() {
-    this.activeAnimations.forEach(animation => animation.cancel());
+    this.activeAnimations.forEach((animation) => animation.cancel());
     this.activeAnimations.clear();
   }
 }
@@ -239,12 +276,12 @@ class ScreenManager {
     this.isTransitioning = false;
   }
 
-  async showScreen(screenId, direction = 'forward') {
+  async showScreen(screenId, direction = "forward") {
     if (this.isTransitioning) return;
-    
+
     this.isTransitioning = true;
     const targetScreen = document.getElementById(screenId);
-    
+
     if (!targetScreen) {
       this.isTransitioning = false;
       return;
@@ -257,41 +294,41 @@ class ScreenManager {
 
     // Show target screen
     await this.displayScreen(targetScreen, direction);
-    
+
     this.currentScreen = targetScreen;
     this.isTransitioning = false;
   }
 
   async hideScreen(screen, direction) {
-    const translateX = direction === 'forward' ? '-30px' : '30px';
-    
-    return new Promise(resolve => {
-      screen.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-      screen.style.opacity = '0';
+    const translateX = direction === "forward" ? "-30px" : "30px";
+
+    return new Promise((resolve) => {
+      screen.style.transition = "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
+      screen.style.opacity = "0";
       screen.style.transform = `translateX(${translateX}) scale(0.95)`;
-      
+
       setTimeout(() => {
-        screen.classList.remove('active');
-        screen.style.display = 'none';
+        screen.classList.remove("active");
+        screen.style.display = "none";
         resolve();
       }, 400);
     });
   }
 
   async displayScreen(screen, direction) {
-    const translateX = direction === 'forward' ? '30px' : '-30px';
-    
-    return new Promise(resolve => {
-      screen.style.display = 'block';
-      screen.style.opacity = '0';
+    const translateX = direction === "forward" ? "30px" : "-30px";
+
+    return new Promise((resolve) => {
+      screen.style.display = "block";
+      screen.style.opacity = "0";
       screen.style.transform = `translateX(${translateX}) scale(0.95)`;
-      
+
       requestAnimationFrame(() => {
-        screen.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-        screen.style.opacity = '1';
-        screen.style.transform = 'translateX(0) scale(1)';
-        screen.classList.add('active');
-        
+        screen.style.transition = "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
+        screen.style.opacity = "1";
+        screen.style.transform = "translateX(0) scale(1)";
+        screen.classList.add("active");
+
         setTimeout(resolve, 500);
       });
     });
@@ -301,17 +338,17 @@ class ScreenManager {
 // Enhanced Confetti System
 class ConfettiManager {
   constructor() {
-    this.colors = ['#0ea5e9', '#22c55e', '#f59e0b', '#d946ef', '#ef4444'];
+    this.colors = ["#0ea5e9", "#22c55e", "#f59e0b", "#d946ef", "#ef4444"];
     this.isActive = false;
   }
 
   create() {
     if (this.isActive) return;
-    
+
     this.isActive = true;
     const confettiCount = 60;
-    const container = document.createElement('div');
-    container.className = 'confetti-container';
+    const container = document.createElement("div");
+    container.className = "confetti-container";
     container.style.cssText = `
       position: fixed;
       top: 0;
@@ -321,13 +358,13 @@ class ConfettiManager {
       pointer-events: none;
       z-index: 1000;
     `;
-    
+
     document.body.appendChild(container);
-    
+
     for (let i = 0; i < confettiCount; i++) {
       this.createConfettiPiece(container, i);
     }
-    
+
     setTimeout(() => {
       container.remove();
       this.isActive = false;
@@ -335,13 +372,13 @@ class ConfettiManager {
   }
 
   createConfettiPiece(container, index) {
-    const confetti = document.createElement('div');
+    const confetti = document.createElement("div");
     const size = Math.random() * 8 + 4;
     const color = this.colors[Math.floor(Math.random() * this.colors.length)];
     const startX = Math.random() * 100;
     const duration = Math.random() * 2 + 2;
     const delay = index * 20;
-    
+
     confetti.style.cssText = `
       position: absolute;
       width: ${size}px;
@@ -352,7 +389,7 @@ class ConfettiManager {
       border-radius: 50%;
       animation: confetti-fall ${duration}s linear ${delay}ms forwards;
     `;
-    
+
     container.appendChild(confetti);
   }
 }
@@ -366,7 +403,7 @@ const screenManager = new ScreenManager();
 const confettiManager = new ConfettiManager();
 
 // Enhanced utility functions
-function playFeedback(pattern = 'click', sound = 'click') {
+function playFeedback(pattern = "click", sound = "click") {
   hapticManager.vibrate(pattern);
   soundManager.play(sound);
 }
@@ -384,24 +421,24 @@ function shuffleArray(arr) {
 async function displayStep(stepIndex) {
   const stepDiv = document.getElementById(`step${stepIndex + 1}`);
   const numberList = stepDiv.querySelector(".number-list");
-  
+
   // Loading animation
-  let dots = '';
+  let dots = "";
   const loadingInterval = setInterval(() => {
-    dots = dots.length >= 3 ? '' : dots + '.';
+    dots = dots.length >= 3 ? "" : dots + ".";
     numberList.innerHTML = `<span style="opacity: 0.6;">Analyzing${dots}</span>`;
   }, 300);
-  
+
   await screenManager.showScreen(`step${stepIndex + 1}`);
-  
+
   setTimeout(() => {
     clearInterval(loadingInterval);
     const shuffledNumbers = shuffleArray(gameState.numbers[stepIndex]);
-    
+
     // Enhanced number display with staggered animation
-    numberList.innerHTML = '';
+    numberList.innerHTML = "";
     shuffledNumbers.forEach((num, index) => {
-      const span = document.createElement('span');
+      const span = document.createElement("span");
       span.textContent = num;
       span.style.cssText = `
         opacity: 0;
@@ -410,36 +447,36 @@ async function displayStep(stepIndex) {
         display: inline-block;
         margin: 0 0.3em;
       `;
-      
+
       numberList.appendChild(span);
-      
+
       if (index < shuffledNumbers.length - 1) {
-        const comma = document.createElement('span');
-        comma.textContent = ', ';
-        comma.style.opacity = '0.7';
+        const comma = document.createElement("span");
+        comma.textContent = ", ";
+        comma.style.opacity = "0.7";
         numberList.appendChild(comma);
       }
-      
+
       setTimeout(() => {
-        span.style.opacity = '1';
-        span.style.transform = 'translateY(0)';
+        span.style.opacity = "1";
+        span.style.transform = "translateY(0)";
       }, index * 100 + 300);
     });
-  }, 1000);
+  }, 500);
 }
 
 // Enhanced game start function
 async function startGame() {
   if (gameState.isTransitioning) return;
-  
-  playFeedback('success', 'help');
+
+  playFeedback("success", "help");
   gameState.isTransitioning = true;
-  
+
   // Add button loading state
   const startButton = event.target;
-  startButton.classList.add('loading');
-  startButton.style.pointerEvents = 'none';
-  
+  startButton.classList.add("loading");
+  startButton.style.pointerEvents = "none";
+
   try {
     await displayStep(gameState.currentStep);
   } finally {
@@ -450,23 +487,23 @@ async function startGame() {
 // Enhanced answer handling with visual feedback
 async function handleAnswer(stepIndex, value) {
   if (gameState.isTransitioning) return;
-  
+
   gameState.isTransitioning = true;
-  soundManager.stop('help');
-  
+  soundManager.stop("help");
+
   gameState.answers[stepIndex] = value;
   gameState.currentStep++;
-  
+
   // Enhanced button feedback
   const clickedButton = event.target;
   const isYes = value > 0;
-  
+
   // Add ripple effect
-  const ripple = document.createElement('div');
+  const ripple = document.createElement("div");
   ripple.style.cssText = `
     position: absolute;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(98, 90, 163, 0.6);
     transform: scale(0);
     animation: ripple 0.6s linear;
     left: 50%;
@@ -477,27 +514,31 @@ async function handleAnswer(stepIndex, value) {
     margin-top: -10px;
     pointer-events: none;
   `;
-  
-  clickedButton.style.position = 'relative';
+
+  clickedButton.style.position = "relative";
   clickedButton.appendChild(ripple);
-  
+
   // Button press animation
-  animationManager.animate(clickedButton, [
-    { transform: 'scale(1)' },
-    { transform: 'scale(0.95)' },
-    { transform: 'scale(1)' }
-  ], { duration: 200 });
-  
+  animationManager.animate(
+    clickedButton,
+    [
+      { transform: "scale(1)" },
+      { transform: "scale(0.95)" },
+      { transform: "scale(1)" },
+    ],
+    { duration: 200 }
+  );
+
   setTimeout(() => ripple.remove(), 600);
-  
+
   try {
     if (gameState.currentStep < 4) {
-      playFeedback('click', 'click');
-      await new Promise(resolve => setTimeout(resolve, 400));
+      playFeedback("click", "click");
+      await new Promise((resolve) => setTimeout(resolve, 400));
       await displayStep(gameState.currentStep);
     } else {
-      playFeedback('success', 'click');
-      await new Promise(resolve => setTimeout(resolve, 400));
+      playFeedback("success", "click");
+      await new Promise((resolve) => setTimeout(resolve, 400));
       await showResult();
     }
   } finally {
@@ -507,92 +548,94 @@ async function handleAnswer(stepIndex, value) {
 
 // Enhanced result display with dramatic reveal
 async function showResult() {
-  await screenManager.showScreen('loader');
-  
+  await screenManager.showScreen("loader");
+
   // Enhanced loading messages
   const loadingMessages = [
     "Reading your mind...",
     "Analyzing patterns...",
     "Calculating result...",
-    "Almost there..."
+    "Almost there...",
   ];
-  
-  const loaderTitle = document.querySelector('.loading-title');
+
+  const loaderTitle = document.querySelector(".loading-title");
   let messageIndex = 0;
-  
+
   const messageInterval = setInterval(() => {
     if (messageIndex < loadingMessages.length) {
-      loaderTitle.style.opacity = '0';
+      loaderTitle.style.opacity = "0";
       setTimeout(() => {
         loaderTitle.textContent = loadingMessages[messageIndex];
-        loaderTitle.style.opacity = '1';
+        loaderTitle.style.opacity = "1";
         messageIndex++;
       }, 200);
     }
   }, 700);
-  
+
   setTimeout(async () => {
     clearInterval(messageInterval);
-    
+
     const { answer, sound } = gameState.getResult();
-    
+
     // Play result sound
     soundManager.play(sound);
-    
+
     // Show result screen
-    await screenManager.showScreen('result-screen');
-    
+    await screenManager.showScreen("result-screen");
+
     // Dramatic answer reveal
     const answerElement = document.getElementById("ans");
-    answerElement.innerHTML = '';
-    
+    answerElement.innerHTML = "";
+
     // Letter by letter reveal
-    const letters = answer.split('');
+    const letters = answer.split("");
     letters.forEach((letter, index) => {
-      const span = document.createElement('span');
+      const span = document.createElement("span");
       span.textContent = letter;
       span.style.cssText = `
         opacity: 0;
-        transform: rotateY(90deg);
+       
         display: inline-block;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+       
       `;
       answerElement.appendChild(span);
-      
+
       setTimeout(() => {
-        span.style.opacity = '1';
-        span.style.transform = 'rotateY(0deg)';
+        span.style.opacity = "1";
       }, index * 100 + 500);
     });
-    
+
     // Celebration effects
-    playFeedback('celebration', 'click');
+    playFeedback("celebration", "click");
     confettiManager.create();
-    
+
     // Show restart button with delay
     setTimeout(() => {
       const restartBtn = document.getElementById("restart");
-      animationManager.animate(restartBtn, [
-        { opacity: 0, transform: 'translateY(30px) scale(0.9)' },
-        { opacity: 1, transform: 'translateY(0) scale(1)' }
-      ], { duration: 500 });
+      animationManager.animate(
+        restartBtn,
+        [
+          { opacity: 0, transform: "translateY(30px) scale(0.9)" },
+          { opacity: 1, transform: "translateY(0) scale(1)" },
+        ],
+        { duration: 500 }
+      );
     }, 1500);
-    
   }, 3000);
 }
 
 // Enhanced reset function
 async function reset() {
   if (gameState.isTransitioning) return;
-  
-  playFeedback('click', 'click');
+
+  playFeedback("click", "click");
   gameState.isTransitioning = true;
-  
-  await screenManager.showScreen('loader');
-  
-  const loaderTitle = document.querySelector('.loading-title');
-  loaderTitle.textContent = 'Resetting game...';
-  
+
+  await screenManager.showScreen("loader");
+
+  const loaderTitle = document.querySelector(".loading-title");
+  loaderTitle.textContent = "Resetting game...";
+
   setTimeout(() => {
     gameState.reset();
     location.reload();
@@ -600,48 +643,53 @@ async function reset() {
 }
 
 // Enhanced keyboard support
-document.addEventListener('keydown', function(event) {
+document.addEventListener("keydown", function (event) {
   if (gameState.isTransitioning) return;
-  
-  const activeScreen = document.querySelector('.screen.active');
+
+  const activeScreen = document.querySelector(".screen.active");
   if (!activeScreen) return;
-  
-  const handledKeys = ['Enter', ' ', 'y', 'n', 'Y', 'N'];
+
+  const handledKeys = ["Enter", " ", "y", "n", "Y", "N"];
   if (handledKeys.includes(event.key)) {
     event.preventDefault();
   }
-  
+
   // Handle Enter or Space on main page
-  if (activeScreen.id === 'mainpage' && (event.key === 'Enter' || event.key === ' ')) {
+  if (
+    activeScreen.id === "mainpage" &&
+    (event.key === "Enter" || event.key === " ")
+  ) {
     startGame();
     return;
   }
-  
+
   // Handle Y/N keys on step screens
-  if (activeScreen.classList.contains('step-screen')) {
-    if (event.key.toLowerCase() === 'y') {
-      const yesButton = activeScreen.querySelector('.primary-btn');
+  if (activeScreen.classList.contains("step-screen")) {
+    if (event.key.toLowerCase() === "y") {
+      const yesButton = activeScreen.querySelector(".primary-btn");
       if (yesButton) {
-        animationManager.animate(yesButton, [
-          { transform: 'scale(1)' },
-          { transform: 'scale(0.95)' }
-        ], { duration: 100 });
+        animationManager.animate(
+          yesButton,
+          [{ transform: "scale(1)" }, { transform: "scale(0.95)" }],
+          { duration: 100 }
+        );
         setTimeout(() => yesButton.click(), 100);
       }
-    } else if (event.key.toLowerCase() === 'n') {
-      const noButton = activeScreen.querySelector('.secondary-btn');
+    } else if (event.key.toLowerCase() === "n") {
+      const noButton = activeScreen.querySelector(".secondary-btn");
       if (noButton) {
-        animationManager.animate(noButton, [
-          { transform: 'scale(1)' },
-          { transform: 'scale(0.95)' }
-        ], { duration: 100 });
+        animationManager.animate(
+          noButton,
+          [{ transform: "scale(1)" }, { transform: "scale(0.95)" }],
+          { duration: 100 }
+        );
         setTimeout(() => noButton.click(), 100);
       }
     }
   }
-  
+
   // Handle Enter on result screen
-  if (activeScreen.id === 'result-screen' && event.key === 'Enter') {
+  if (activeScreen.id === "result-screen" && event.key === "Enter") {
     reset();
   }
 });
@@ -652,46 +700,63 @@ let touchEndY = 0;
 let touchStartX = 0;
 let touchEndX = 0;
 
-document.addEventListener('touchstart', function(event) {
-  touchStartY = event.changedTouches[0].screenY;
-  touchStartX = event.changedTouches[0].screenX;
-}, { passive: true });
+document.addEventListener(
+  "touchstart",
+  function (event) {
+    touchStartY = event.changedTouches[0].screenY;
+    touchStartX = event.changedTouches[0].screenX;
+  },
+  { passive: true }
+);
 
-document.addEventListener('touchend', function(event) {
-  touchEndY = event.changedTouches[0].screenY;
-  touchEndX = event.changedTouches[0].screenX;
-  handleSwipe();
-}, { passive: true });
+document.addEventListener(
+  "touchend",
+  function (event) {
+    touchEndY = event.changedTouches[0].screenY;
+    touchEndX = event.changedTouches[0].screenX;
+    handleSwipe();
+  },
+  { passive: true }
+);
 
 function handleSwipe() {
   if (gameState.isTransitioning) return;
-  
+
   const swipeThreshold = 50;
   const swipeDistanceY = touchStartY - touchEndY;
   const swipeDistanceX = touchStartX - touchEndX;
-  
+
   // Swipe up to start game on main page
-  if (swipeDistanceY > swipeThreshold && Math.abs(swipeDistanceX) < swipeThreshold) {
-    const mainPage = document.getElementById('mainpage');
-    if (mainPage && mainPage.classList.contains('active')) {
+  if (
+    swipeDistanceY > swipeThreshold &&
+    Math.abs(swipeDistanceX) < swipeThreshold
+  ) {
+    const mainPage = document.getElementById("mainpage");
+    if (mainPage && mainPage.classList.contains("active")) {
       startGame();
     }
   }
-  
+
   // Swipe left for "Yes" on step screens
-  if (swipeDistanceX > swipeThreshold && Math.abs(swipeDistanceY) < swipeThreshold) {
-    const activeScreen = document.querySelector('.screen.active');
-    if (activeScreen && activeScreen.classList.contains('step-screen')) {
-      const yesButton = activeScreen.querySelector('.primary-btn');
+  if (
+    swipeDistanceX > swipeThreshold &&
+    Math.abs(swipeDistanceY) < swipeThreshold
+  ) {
+    const activeScreen = document.querySelector(".screen.active");
+    if (activeScreen && activeScreen.classList.contains("step-screen")) {
+      const yesButton = activeScreen.querySelector(".primary-btn");
       if (yesButton) yesButton.click();
     }
   }
-  
+
   // Swipe right for "No" on step screens
-  if (swipeDistanceX < -swipeThreshold && Math.abs(swipeDistanceY) < swipeThreshold) {
-    const activeScreen = document.querySelector('.screen.active');
-    if (activeScreen && activeScreen.classList.contains('step-screen')) {
-      const noButton = activeScreen.querySelector('.secondary-btn');
+  if (
+    swipeDistanceX < -swipeThreshold &&
+    Math.abs(swipeDistanceY) < swipeThreshold
+  ) {
+    const activeScreen = document.querySelector(".screen.active");
+    if (activeScreen && activeScreen.classList.contains("step-screen")) {
+      const noButton = activeScreen.querySelector(".secondary-btn");
       if (noButton) noButton.click();
     }
   }
@@ -700,19 +765,19 @@ function handleSwipe() {
 // Performance optimization: Intersection Observer for animations
 const observerOptions = {
   threshold: 0.1,
-  rootMargin: '0px 0px -50px 0px'
+  rootMargin: "0px 0px -50px 0px",
 };
 
 const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
+  entries.forEach((entry) => {
     if (entry.isIntersecting) {
-      entry.target.style.animationPlayState = 'running';
+      entry.target.style.animationPlayState = "running";
     }
   });
 }, observerOptions);
 
 // Add CSS for confetti animation
-const confettiStyle = document.createElement('style');
+const confettiStyle = document.createElement("style");
 confettiStyle.textContent = `
   @keyframes confetti-fall {
     0% {
@@ -735,54 +800,63 @@ confettiStyle.textContent = `
 document.head.appendChild(confettiStyle);
 
 // Initialize the game
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
   // Show the main page
-  screenManager.showScreen('mainpage');
-  
+  screenManager.showScreen("mainpage");
+
   // Enhanced initial animations
   setTimeout(() => {
-    const header = document.querySelector('.app-header');
+    const header = document.querySelector(".app-header");
     if (header) {
-      header.style.opacity = '1';
-      header.style.transform = 'translateY(0)';
+      header.style.opacity = "1";
+      header.style.transform = "translateY(0)";
     }
   }, 200);
-  
+
   // Observe animated elements
-  document.querySelectorAll('.gradient-orb, .screen').forEach(el => {
+  document.querySelectorAll(".gradient-orb, .screen").forEach((el) => {
     observer.observe(el);
   });
-  
+
   // Add visual feedback for user interactions
-  document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('primary-btn') || e.target.classList.contains('secondary-btn')) {
-      playFeedback('click', 'click');
+  document.addEventListener("click", (e) => {
+    if (
+      e.target.classList.contains("primary-btn") ||
+      e.target.classList.contains("secondary-btn")
+    ) {
+      playFeedback("click", "click");
     }
   });
-  
-  console.log('🧠 MindReader Game Enhanced - Ready to read minds!');
-  console.log('💡 Controls: Y/N keys, Enter to start/restart, Swipe gestures on mobile');
-  console.log('🎵 Sound system initialized');
-  console.log('⚡ Performance optimizations active');
+
+  console.log("🧠 MindReader Game Enhanced - Ready to read minds!");
+  console.log(
+    "💡 Controls: Y/N keys, Enter to start/restart, Swipe gestures on mobile"
+  );
+  console.log("🎵 Sound system initialized");
+  console.log("⚡ Performance optimizations active");
 });
 
 // Window focus/blur handling for better performance
-window.addEventListener('blur', () => {
+window.addEventListener("blur", () => {
   soundManager.setVolume(0.2);
 });
 
-window.addEventListener('focus', () => {
+window.addEventListener("focus", () => {
   soundManager.setVolume(0.6);
 });
 
 // Error handling for audio context
-window.addEventListener('click', function initAudio() {
-  soundManager.play('click');
-  soundManager.stop('click');
-  window.removeEventListener('click', initAudio);
-}, { once: true });
+window.addEventListener(
+  "click",
+  function initAudio() {
+    soundManager.play("click");
+    soundManager.stop("click");
+    window.removeEventListener("click", initAudio);
+  },
+  { once: true }
+);
 
 // Performance monitoring
-if (typeof performance !== 'undefined' && performance.mark) {
-  performance.mark('mindreader-init-complete');
+if (typeof performance !== "undefined" && performance.mark) {
+  performance.mark("mindreader-init-complete");
 }
