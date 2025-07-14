@@ -1,7 +1,7 @@
 🧠 MindReader
 MindReader is an interactive number-guessing web application that can read your mind in just 4 questions! Think of a number between 0 and 15, answer four simple yes/no questions, and let the algorithm guess it with surprising accuracy.
 
-🔗 Live Demo: MindReader on GitHub Pages
+🔗 Live Demo: [MindReader on GitHub Pages](https://mohammadibbu.github.io/MindReader/)
 
 ✨ Features
 🧩 Smart Question Flow – Uses a clever algorithm to guess your number based on 4 yes/no responses.
@@ -52,7 +52,7 @@ Click restart and try with a different number.
 bash
 Copy
 Edit
-git clone https://github.com/your-username/MindReader.git
+git clone https://github.com/Mohammadibbu/MindReader.git
 cd MindReader
 # Open index.html in your browser
 🤝 Contributing
