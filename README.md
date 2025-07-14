@@ -27,7 +27,6 @@ Vibration API – For haptic feedback
 
 Audio API – For sound effects
 
-Bootstrap – For responsive layout structure (if used)
 
 🗂 Backend
 None – 100% client-side implementation
@@ -64,7 +63,7 @@ Vibration & Audio APIs – For interactive effects.
 
 Google Fonts – For clean, stylish text.
 
-Bootstrap (if used) – For responsive structure and layout.
+
 
 💡 Inspired by logical bit-checking and gamification, MindReader turns a simple number trick into a fun user experience.
 
