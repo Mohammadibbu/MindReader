@@ -437,22 +437,23 @@ async function displayStep(stepIndex) {
     shuffledNumbers.forEach((num, index) => {
       const span = document.createElement("span");
       span.textContent = num;
-      span.style.cssText = `
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        display: inline-block;
-        margin: 0 0.3em;
-      `;
+      span.classList.add("number-item");
+      // span.style.cssText = `
+      //   opacity: 0;
+      //   transform: translateY(20px);
+      //   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      //   display: inline-block;
+      //   margin: 0 0.3em;
+      // `;
 
       numberList.appendChild(span);
 
-      if (index < shuffledNumbers.length - 1) {
-        const comma = document.createElement("span");
-        comma.textContent = ", ";
-        comma.style.opacity = "0.7";
-        numberList.appendChild(comma);
-      }
+      // if (index < shuffledNumbers.length - 1) {
+      //   const comma = document.createElement("span");
+      //   comma.textContent = ", ";
+      //   comma.style.opacity = "0.7";
+      //   numberList.appendChild(comma);
+      // }
 
       setTimeout(() => {
         span.style.opacity = "1";
