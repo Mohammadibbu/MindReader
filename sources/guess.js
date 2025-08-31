@@ -1,6 +1,3 @@
-// Modern MindReader Game - Enhanced Performance & UX
-// ═══════════════════════════════════════════════════════════════════════════════
-
 // Game State Management
 class GameState {
   constructor() {
@@ -727,15 +724,15 @@ function handleSwipe() {
   const swipeDistanceX = touchStartX - touchEndX;
 
   // Swipe up to start game on main page
-  if (
-    swipeDistanceY > swipeThreshold &&
-    Math.abs(swipeDistanceX) < swipeThreshold
-  ) {
-    const mainPage = document.getElementById("mainpage");
-    if (mainPage && mainPage.classList.contains("active")) {
-      startGame();
-    }
-  }
+  // if (
+  //   swipeDistanceY > swipeThreshold &&
+  //   Math.abs(swipeDistanceX) < swipeThreshold
+  // ) {
+  //   const mainPage = document.getElementById("mainpage");
+  //   if (mainPage && mainPage.classList.contains("active")) {
+  //     startGame();
+  //   }
+  // }
 
   // Swipe left for "Yes" on step screens
   if (

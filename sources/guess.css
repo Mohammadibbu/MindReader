@@ -1261,17 +1261,8 @@ body {
     font-size: var(--text-base);
   }
 
- .number-list {
+  .number-list {
     font-size: var(--text-lg);
-    padding: var(--space-5);
-    min-height: 80px;
-    flex-wrap: wrap;
-    justify-content: center;
-    row-gap: 0.5em;
-  }
-
-  .number-list span {
-    white-space: nowrap;
   }
 
   .answer-number {
@@ -1282,6 +1273,20 @@ body {
   .secondary-btn {
     font-size: var(--text-base);
     padding: var(--space-3) var(--space-5);
+  }
+}
+@media (max-width: 420px) {
+  .number-list {
+    padding: var(--space-5);
+    font-size: var(--text-sm);
+    min-height: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 0.5em;
+  }
+
+  .number-list span {
+    white-space: nowrap;
   }
 }
 
